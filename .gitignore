@@ -30,3 +30,15 @@
 
 # Debug files
 *.dSYM/
+
+# Other PSoC Files
+*.inc
+Car_Lab_Code/Car_Lab_Task2.cydsn/DP8051/
+Car_Lab_Code/Car_Lab_Task1.cydsn/DP8051/
+Car_Lab_Code/Design01.cydsn/DP8051/
+Car_Lab_Code/Design01.cydsn/codegentemp/*
+Car_Lab_Code/Design01.cydsn/Generated_Source/*
+Car_Lab_Code/Car_Lab_Task2.cydsn/codegentemp/*
+Car_Lab_Code/Car_Lab_Task2.cydsn/Generated_Source/*
+Car_Lab_Code/Car_Lab_Task1.cydsn/codegentemp/*
+Car_Lab_Code/Car_Lab_Task1.cydsn/Generated_Source/*
