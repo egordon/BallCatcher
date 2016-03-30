@@ -39,7 +39,8 @@
 #define SPD_KI  0.8f
 #define SPD_SETPOINT 4.0f
 
-#define AVG_KP  0.38f
+#define AVG_KP_DEF 0.42f
+static float AVG_KP = AVG_KP_DEF;
 #define AVG_SETPOINT 720
 
 #define ANG_KP  0.0f
@@ -56,6 +57,50 @@ State_T spdState = NULL;
 
 /* PID Loops */
 PID_T spdPID = NULL;
+
+/* UART Debug Interrupt */
+static int16 dataArr[3500] = {0};
+int restart = 0;
+CY_ISR(uart)
+{
+    int i, j;
+    char c = UART_GetChar();
+    if(c == 'd') {
+        /* Output Error Data from Last Run */
+        for(i = 0; i < 3500; i++) {
+            char tstr[9] = {0};
+            if(i < 3499) sprintf(tstr, "%+4d, ", dataArr[i]);
+            else sprintf(tstr, "%+4d", dataArr[i]);
+            for(j = 0; j < 8; j++)
+                UART_PutChar(tstr[j]);
+        }
+    } else if (c == '+') {
+        /* Increase Kp */
+        char tstr[11] = {0};
+        AVG_KP += 0.01f;
+        sprintf(tstr, "\nKp=%1.2f, ", AVG_KP);
+        for(j = 0; j < 10; j++)
+            UART_PutChar(tstr[j]);
+    } else if (c == '-') {
+        /* Decrease Kp */
+        char tstr[11] = {0};
+        AVG_KP -= 0.01f;
+        sprintf(tstr, "\nKp=%1.2f, ", AVG_KP);
+        for(j = 0; j < 10; j++)
+            UART_PutChar(tstr[j]);
+    } else if (c == 'k') {
+        /* Reset Kp to Default */
+        char tstr[11] = {0};
+        AVG_KP = AVG_KP_DEF;
+        sprintf(tstr, "\nKp=%1.2f, ", AVG_KP);
+        for(j = 0; j < 10; j++)
+            UART_PutChar(tstr[j]);
+    } else if (c == 'r') {
+        /* Start New Run */
+        restart = 1;
+    }
+        
+}
 
 /* Clock and Clock Interrupt */
 int millis = 0;
@@ -150,6 +195,9 @@ void main()
     MOSFET_Start();
     Angle_Start();
     
+    /* Start UART */
+    UART_Start();
+    
     /***** End Firmware Declarations *****/
     
     /***** Object Declarations *****/
@@ -176,6 +224,10 @@ void main()
     timer_inter_bot_Start();
     timer_inter_bot_SetVector(timer_bot);
     
+    /* UART Interrupt */
+    uart_rx_Start();
+    uart_rx_SetVector(uart);
+    
     
     /* Speed Interrupt */
     spd_inter_Start();
@@ -183,74 +235,91 @@ void main()
     /***** End Interrupt Declarations *****/
     
     /*** Set PID Setpoints ***/
-    PID_Setpoint(spdPID, SPD_SETPOINT);
-    
-    while(ticks < (TICKS_PER_LAB * LAPS))
-    {
-        int err, avg, ang;
-        static int dir = 0;
+    for(;;) {
+        int i = 0;
+        int dir = 0;
+        /* Wait for Serial Restart */
+        while(!restart) {
+            LCD_Position(1, 0);
+            LCD_PrintString("Wait on Restart");
+        }
+        /* 4 Second Delay */
+        {
+            int targetmillis = millis + 4000;
+            LCD_Position(1, 0);
+            LCD_PrintString("Starting........");
+            while(millis < targetmillis);
+        }
+        ticks = 0;
+        restart = 0;
+        PID_Setpoint(spdPID, SPD_SETPOINT);
         
-        /* Update PID Loop */
-        PID_Update(spdPID, State_Avg(spdState), 1);
-        avg = linePos + linePosBot;
-        ang = linePos - linePosBot;
-        
-        /**** Direction Detection ****/
-        if (!isLineLost) {
-            if(ang > DIR_ANG) {
-                dir += 2;
-            } else if (ang < -DIR_ANG) {
-                dir -= 2;
-            } else {
-                if(dir > 0) dir--;
-                else dir++;
+        while(ticks < (TICKS_PER_LAB * LAPS))
+        {
+            int16 err, avg, ang;
+            
+            /* Update PID Loop */
+            PID_Update(spdPID, State_Avg(spdState), 1);
+            avg = linePos + linePosBot;
+            ang = linePos - linePosBot;
+            
+            /**** Direction Detection ****/
+            if (!isLineLost) {
+                if(ang > DIR_ANG) {
+                    dir += 2;
+                } else if (ang < -DIR_ANG) {
+                    dir -= 2;
+                } else {
+                    if(dir > 0) dir--;
+                    else dir++;
+                }
             }
+            
+            /* Clamp Direction Variable */
+            if (dir < -DIR_CAP) dir = -DIR_CAP;
+            if (dir > DIR_CAP) dir = DIR_CAP;
+            
+            if (dir > DIR_THRESH) { /* LEFT: Use left-most point. */
+                if (linePos > linePosBot)
+                    avg = linePos + linePos;
+                else avg = linePosBot + linePosBot;
+            } else if (dir < -DIR_THRESH) { /* RIGHT: Use right-most point. */
+                if (linePos < linePosBot)
+                    avg = linePos + linePos;
+                else avg = linePosBot + linePosBot;
+            } /* Else STRAIGHT: Use average of points. */
+            
+            /*** END Direction Detection ***/
+            
+            /* Debug Output */
+            LCD_Position(0, 0);
+            sprintf(tstr, "Avg: %5d", avg);
+            LCD_PrintString(tstr);
+            LCD_Position(1, 0);/*
+            if(dir > DIR_THRESH) {
+                LCD_PrintString("Left     ");
+            } else if (dir < -DIR_THRESH) {
+                LCD_PrintString("Right    ");
+            } else {
+                LCD_PrintString("Straight ");
+            }*/
+            sprintf(tstr, "Spd: %1.1f       ", State_Avg(spdState));
+            LCD_PrintString(tstr);
+            
+            /* Calculate Error */
+            err = AVG_SETPOINT - avg;
+            if(i < 7000) dataArr[i/2] = err;
+            
+            /* Write */
+            MOSFET_WriteCompare(PID_Output(spdPID));
+            Angle_Set((int)(AVG_KP * (float)err));
+            i++;
         }
         
-        /* Clamp Direction Variable */
-        if (dir < -DIR_CAP) dir = -DIR_CAP;
-        if (dir > DIR_CAP) dir = DIR_CAP;
-        
-        if (dir > DIR_THRESH) { /* LEFT: Use left-most point. */
-            PID_Setpoint(spdPID, SPD_SETPOINT);
-            if (linePos > linePosBot)
-                avg = linePos + linePos;
-            else avg = linePosBot + linePosBot;
-        } else if (dir < -DIR_THRESH) { /* RIGHT: Use right-most point. */
-            PID_Setpoint(spdPID, SPD_SETPOINT);
-            if (linePos < linePosBot)
-                avg = linePos + linePos;
-            else avg = linePosBot + linePosBot;
-        } else { /* STRAIGHT: Use average of points, can go a little faster. */
-            PID_Setpoint(spdPID, SPD_SETPOINT + 0.5);
-        }
-        /*** END Direction Detection ***/
-        
-        /* Debug Output */
-        LCD_Position(0, 0);
-        sprintf(tstr, "Avg: %5d", avg);
-        LCD_PrintString(tstr);
-        LCD_Position(1, 0);
-        if(dir > DIR_THRESH) {
-            LCD_PrintString("Left     ");
-        } else if (dir < -DIR_THRESH) {
-            LCD_PrintString("Right    ");
-        } else {
-            LCD_PrintString("Straight ");
-        }
-        
-        /* Calculate Error */
-        err = AVG_SETPOINT - avg;
-        
-        /* Write */
-        MOSFET_WriteCompare(PID_Output(spdPID));
-        Angle_Set((int)(AVG_KP * (float)err));
+        /* Stop */
+        MOSFET_WriteCompare(0);
+        Angle_Set(0.0f);
     }
-    
-    /* Stop */
-    MOSFET_WriteCompare(0);
-    Angle_Set(0.0f);
-    
 }
 
 /* [] END OF FILE */

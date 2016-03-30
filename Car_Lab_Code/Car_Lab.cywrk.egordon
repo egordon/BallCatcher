@@ -226,6 +226,14 @@
 <v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\timer_inter_bot</v>
 <v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\timer_inter_bot\timer_inter_bot.c</v>
 <v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\timer_inter_bot\timer_inter_bot.h</v>
+<v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\UART</v>
+<v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\UART\UART.c</v>
+<v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\UART\UART.h</v>
+<v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\UART\UART_INT.c</v>
+<v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\UART\UART_PM.c</v>
+<v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\uart_rx</v>
+<v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\uart_rx\uart_rx.c</v>
+<v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\uart_rx\uart_rx.h</v>
 <v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\VRef</v>
 <v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\VRef\VRef.c</v>
 <v>Car_Lab\Car_Lab_Task2\Generated_Source\PSoC3\VRef\VRef.h</v>
@@ -394,6 +402,7 @@
 <v>Car_Lab\Car_Lab_Task2\Comp_v1_90</v>
 <v>Car_Lab\Car_Lab_Task2\Timer_v2_30</v>
 <v>Car_Lab\Car_Lab_Task2\VDAC8_v1_80</v>
+<v>Car_Lab\Car_Lab_Task2\UART_v2_20</v>
 </ExpandedNodeIds>
 <VisibleNodeIds>
 <v>Car_Lab</v>
@@ -424,6 +433,7 @@
 <v>Car_Lab\Car_Lab_Task2\Comp_v1_90</v>
 <v>Car_Lab\Car_Lab_Task2\Timer_v2_30</v>
 <v>Car_Lab\Car_Lab_Task2\VDAC8_v1_80</v>
+<v>Car_Lab\Car_Lab_Task2\UART_v2_20</v>
 </VisibleNodeIds>
 </CyGuid_2a325b3b-c96a-4e9f-b7a0-2c44ecb5f237>
 </TreeStatesV2>
@@ -441,6 +451,7 @@
 <name v=".\Car_Lab_Task2.cydsn\main.c" />
 <name v=".\Car_Lab_Task2.cydsn\Car_Lab_Task2.cydwr" />
 <name v=".\Car_Lab_Task2.cydsn\TopDesign\TopDesign.cysch" />
+<name v=".\Car_Lab_Task2.cydsn\pid.c" />
 </OpenDocs>
 <config v="" />
 </CyGuid_843a90a4-0c4b-4e44-991d-05e7fb117a21>

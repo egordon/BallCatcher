@@ -68,6 +68,7 @@ void PID_Setpoint(PID_T pObj, float setpoint)
     pObj->un = pObj->ov = setpoint;
     pObj->lastTime = 0;
     pObj->firstTime = 0;
+    pObj->sum   = 0.0f;
 }
 
 /* Update PID Loop with value. If customDt == 0, dt is calculated from millisecond clock. */
