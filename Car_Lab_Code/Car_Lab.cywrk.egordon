@@ -340,9 +340,21 @@
 <VisibleNodeIds>
 <v>Car_Lab</v>
 <v>Car_Lab\Car_Lab_Task1</v>
+<v>Car_Lab\Car_Lab_Task1\DP8051</v>
+<v>Car_Lab\Car_Lab_Task1\DP8051\DP8051_Keil_903</v>
+<v>Car_Lab\Car_Lab_Task1\DP8051\DP8051_Keil_903\Debug</v>
+<v>Car_Lab\Car_Lab_Task1\DP8051\DP8051_Keil_903\Debug\Car_Lab_Task1.elf</v>
+<v>Car_Lab\Car_Lab_Task1\DP8051\DP8051_Keil_903\Debug\Car_Lab_Task1.hex</v>
+<v>Car_Lab\Car_Lab_Task1\DP8051\DP8051_Keil_903\Debug\Car_Lab_Task1.map</v>
 <v>Car_Lab\Car_Lab_Task1\Car_Lab_Task1.rpt</v>
 <v>Car_Lab\Car_Lab_Task1\Car_Lab_Task1_timing.html</v>
 <v>Car_Lab\Car_Lab_Task2</v>
+<v>Car_Lab\Car_Lab_Task2\DP8051</v>
+<v>Car_Lab\Car_Lab_Task2\DP8051\DP8051_Keil_903</v>
+<v>Car_Lab\Car_Lab_Task2\DP8051\DP8051_Keil_903\Debug</v>
+<v>Car_Lab\Car_Lab_Task2\DP8051\DP8051_Keil_903\Debug\Car_Lab_Task2.elf</v>
+<v>Car_Lab\Car_Lab_Task2\DP8051\DP8051_Keil_903\Debug\Car_Lab_Task2.hex</v>
+<v>Car_Lab\Car_Lab_Task2\DP8051\DP8051_Keil_903\Debug\Car_Lab_Task2.map</v>
 <v>Car_Lab\Car_Lab_Task2\Car_Lab_Task2.rpt</v>
 <v>Car_Lab\Car_Lab_Task2\Car_Lab_Task2_timing.html</v>
 </VisibleNodeIds>
@@ -429,8 +441,6 @@
 <name v=".\Car_Lab_Task2.cydsn\main.c" />
 <name v=".\Car_Lab_Task2.cydsn\Car_Lab_Task2.cydwr" />
 <name v=".\Car_Lab_Task2.cydsn\TopDesign\TopDesign.cysch" />
-<name v=".\Car_Lab_Task2.cydsn\pid.h" />
-<name v=".\Car_Lab_Task2.cydsn\pid.c" />
 </OpenDocs>
 <config v="" />
 </CyGuid_843a90a4-0c4b-4e44-991d-05e7fb117a21>

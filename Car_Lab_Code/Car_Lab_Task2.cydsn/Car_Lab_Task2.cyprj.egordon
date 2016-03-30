@@ -1107,6 +1107,16 @@
 <dep name=".\device.h" />
 </file>
 <file name=".\angle.c" />
+<file name=".\DP8051\DP8051_Keil_903\Debug\pid.obj">
+<dep name=".\pid.c" />
+<dep name=".\pid.h" />
+</file>
+<file name=".\pid.c" />
+<file name=".\DP8051\DP8051_Keil_903\Debug\state.obj">
+<dep name=".\state.c" />
+<dep name=".\state.h" />
+</file>
+<file name=".\state.c" />
 <file name=".\DP8051\DP8051_Keil_903\Debug\CSync.obj">
 <dep name=".\Generated_Source\PSoC3\CSync.h" />
 <dep name=".\Generated_Source\PSoC3\CSync_aliases.h" />
@@ -1711,16 +1721,10 @@
 <dep name=".\Generated_Source\PSoC3\KeilStart.a51" />
 </file>
 <file name=".\Generated_Source\PSoC3\KeilStart.a51" />
-<file name=".\DP8051\DP8051_Keil_903\Debug\pid.obj">
-<dep name=".\pid.c" />
-<dep name=".\pid.h" />
+<file name=".\DP8051\DP8051_Keil_903\Debug\cymem.obj">
+<dep name=".\Generated_Source\PSoC3\cymem.a51" />
 </file>
-<file name=".\pid.c" />
-<file name=".\DP8051\DP8051_Keil_903\Debug\state.obj">
-<dep name=".\state.c" />
-<dep name=".\state.h" />
-</file>
-<file name=".\state.c" />
+<file name=".\Generated_Source\PSoC3\cymem.a51" />
 <file name=".\Generated_Source\PSoC3\LineCounter2.h" />
 <file name=".\Generated_Source\PSoC3\Line_Timer2.h" />
 <file name=".\Generated_Source\PSoC3\timer_inter2.h" />
@@ -2008,10 +2012,6 @@
 <dep name=".\state01.c" />
 </file>
 <file name=".\state01.c" />
-<file name=".\DP8051\DP8051_Keil_903\Debug\cymem.obj">
-<dep name=".\Generated_Source\PSoC3\cymem.a51" />
-</file>
-<file name=".\Generated_Source\PSoC3\cymem.a51" />
 </CyGuid_1173175f-1b9b-4ad4-a065-754a48a27021>
 </dependency_info>
 </CyGuid_f44455c5-3770-4452-b988-0a7a7ff46256>
@@ -2163,9 +2163,10 @@
 <name_val_pair name=".\Generated_Source\PSoC3\Line_Timer_bot.c" v="&quot;NOIV &quot;&quot;LARGE &quot;&quot;MODDP2 &quot;&quot;OMF2 &quot;&quot;VB(1) &quot;&quot;PR(${OutputDir}\${CompileFile}.lst) &quot;&quot;CD &quot;&quot;DB &quot;&quot;NOIP &quot;&quot;OT(2, Size) &quot;&quot; &quot;&quot;INCDIR(Generated_Source\PSoC3) &quot;" />
 <name_val_pair name=".\Generated_Source\PSoC3\Line_Timer_bot_PM.c" v="&quot;NOIV &quot;&quot;LARGE &quot;&quot;MODDP2 &quot;&quot;OMF2 &quot;&quot;VB(1) &quot;&quot;PR(${OutputDir}\${CompileFile}.lst) &quot;&quot;CD &quot;&quot;DB &quot;&quot;NOIP &quot;&quot;OT(2, Size) &quot;&quot; &quot;&quot;INCDIR(Generated_Source\PSoC3) &quot;" />
 <name_val_pair name=".\Generated_Source\PSoC3\timer_inter_bot.c" v="&quot;NOIV &quot;&quot;LARGE &quot;&quot;MODDP2 &quot;&quot;OMF2 &quot;&quot;VB(1) &quot;&quot;PR(${OutputDir}\${CompileFile}.lst) &quot;&quot;CD &quot;&quot;DB &quot;&quot;NOIP &quot;&quot;OT(2, Size) &quot;&quot; &quot;&quot;INCDIR(Generated_Source\PSoC3) &quot;" />
+<name_val_pair name="H:\CarLab\Car_Lab_Code\Car_Lab_Task2.cydsn\DP8051\DP8051_Keil_903\Debug\Car_Lab_Task2.hex" v="&quot; TO &quot;&quot;'${OutputDir}\${ProjectShortName}.omf' &quot;&quot;PR(${OutputDir}\${ProjectShortName}.map) &quot;&quot;IX &quot;&quot;CODE &quot;&quot;DW(16) &quot;&quot;RU &quot;&quot;CL(XDATA(X:0x0000-X:0x1FFF)) &quot;&quot;CL(CODE(C:0x0000-C:0xFFFF)) &quot;&quot;CL(CONST(C:0x0000-C:0xFFFF)) &quot;" />
 </name>
 </genericCmdLineData>
-<codeGenCmdLineTag v="&quot;-.appdatapath&quot; &quot;C:\Users\egordon\AppData\Local\Cypress Semiconductor\PSoC Creator\2.1&quot; &quot;-.fdsnotice&quot; &quot;-.fdswarpdepfile=warp_dependencies.txt&quot; &quot;-.fdselabdepfile=elab_dependencies.txt&quot; &quot;-.fdsbldfile=generated_files.txt&quot; &quot;-p&quot; &quot;H:\PSoC Creator\Car_Lab_Code\Car_Lab_Task2.cydsn\Car_Lab_Task2.cyprj&quot; &quot;-d&quot; &quot;CY8C3866AXI-040&quot; &quot;-s&quot; &quot;H:\PSoC Creator\Car_Lab_Code\Car_Lab_Task2.cydsn\Generated_Source\PSoC3&quot; &quot;--&quot; &quot;-yv2&quot; &quot;-v3&quot; &quot;-ygs&quot; &quot;-q10&quot; &quot;-o2&quot; &quot;-.fftcfgtype=BE&quot; " />
+<codeGenCmdLineTag v="&quot;-.appdatapath&quot; &quot;C:\Users\egordon\AppData\Local\Cypress Semiconductor\PSoC Creator\2.1&quot; &quot;-.fdsnotice&quot; &quot;-.fdswarpdepfile=warp_dependencies.txt&quot; &quot;-.fdselabdepfile=elab_dependencies.txt&quot; &quot;-.fdsbldfile=generated_files.txt&quot; &quot;-p&quot; &quot;H:\CarLab\Car_Lab_Code\Car_Lab_Task2.cydsn\Car_Lab_Task2.cyprj&quot; &quot;-d&quot; &quot;CY8C3866AXI-040&quot; &quot;-s&quot; &quot;H:\CarLab\Car_Lab_Code\Car_Lab_Task2.cydsn\Generated_Source\PSoC3&quot; &quot;--&quot; &quot;-yv2&quot; &quot;-v3&quot; &quot;-ygs&quot; &quot;-q10&quot; &quot;-o2&quot; &quot;-.fftcfgtype=BE&quot; " />
 </CyGuid_b0374e30-ce3a-47f2-ad85-821643292c68>
 </dataGuid>
 </userData>

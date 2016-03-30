@@ -187,7 +187,6 @@ void main()
     
     while(ticks < (TICKS_PER_LAB * LAPS))
     {
-        float speed, out;
         int err, avg, ang;
         static int dir = 0;
         
@@ -222,8 +221,8 @@ void main()
             if (linePos < linePosBot)
                 avg = linePos + linePos;
             else avg = linePosBot + linePosBot;
-        } else { /* STRAIGHT: Use average of points */
-            PID_Setpoint(spdPID, SPD_SETPOINT + 1.5);
+        } else { /* STRAIGHT: Use average of points, can go a little faster. */
+            PID_Setpoint(spdPID, SPD_SETPOINT + 0.5);
         }
         /*** END Direction Detection ***/
         
