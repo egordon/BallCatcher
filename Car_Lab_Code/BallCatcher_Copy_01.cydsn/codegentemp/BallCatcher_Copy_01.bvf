@@ -1,0 +1,773 @@
+
+----------------------------------------------------------------------
+
+Verifying bitstream.
+
+-----------------------------------------------------------------------
+
+
+---------Mapping jacks.---------
+
+
+---------Processing bitstream.---------
+
+Utilized "udb_hv_a@[UDB Pair=(0,0)]"
+Utilized "udb_hc@[UDB Pair=(0,0)]"
+Utilized "udb_hv_b@[UDB Pair=(0,1)]"
+Utilized "udb_hc@[UDB Pair=(0,1)]"
+Utilized "udb_hv_a@[UDB Pair=(0,2)]"
+Utilized "udb_hc@[UDB Pair=(0,2)]"
+Utilized "udb_hv_b@[UDB Pair=(0,3)]"
+Utilized "udb_hc@[UDB Pair=(0,3)]"
+Utilized "udb_hv_b@[UDB Pair=(0,5)]"
+Utilized "dsi_hc@[DSI=(0,0)][side=top]"
+Utilized "dsi_hv_b@[DSI=(0,0)][side=top]"
+Utilized "dsi_hc@[DSI=(1,0)][side=bottom]"
+Utilized "dsi_hv_a@[DSI=(1,0)][side=bottom]"
+Utilized "dsi_hc@[DSI=(0,1)][side=top]"
+Utilized "dsi_hv_b@[DSI=(1,1)][side=bottom]"
+Utilized "dsi_hc@[DSI=(1,2)][side=bottom]"
+Utilized "dsi_hc@[DSI=(0,3)][side=top]"
+Utilized "dsi_hv_a@[DSI=(0,3)][side=top]"
+Utilized "dsi_hc@[DSI=(1,3)][side=bottom]"
+Utilized "dsi_hv_b@[DSI=(1,3)][side=bottom]"
+Utilized "dsi_hc@[DSI=(1,4)][side=bottom]"
+Utilized "dsi_hc@[DSI=(0,5)][side=top]"
+Utilized "dsi_hc@[DSI=(1,5)][side=bottom]"
+Utilized "dsi_hv_b@[DSI=(1,5)][side=bottom]"
+
+---------Propagating signals.---------
+
+Found signal "\Pixy_UART:BUART:rx_status_3\" on jack "pld0:out0[UDB=(0,0)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "statctrl:in3[UDB=(1,1)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_state_3\" on jack "pld0:out1[UDB=(0,0)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld0:in5[UDB=(1,0)]"
+    
+    2. Connected jack name: "pld0:in2[UDB=(0,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_counter_load\" on jack "pld0:out2[UDB=(0,0)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "statctrl:in1[UDB=(0,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_state_0\" on jack "pld0:out3[UDB=(0,0)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "dp:in4[UDB=(1,1)]"
+    
+    2. Connected jack name: "pld0:in7[UDB=(0,0)]"
+    
+    3. Connected jack name: "pld0:in8[UDB=(1,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:pollcount_1\" on jack "pld1:out0[UDB=(0,0)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld0:in3[UDB=(0,0)]"
+    
+    2. Connected jack name: "pld1:in3[UDB=(0,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:pollcount_0\" on jack "pld1:out1[UDB=(0,0)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld0:in5[UDB=(0,0)]"
+    
+    2. Connected jack name: "pld1:in5[UDB=(0,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_bitclk_enable\" on jack "pld1:out2[UDB=(0,0)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "dp:in1[UDB=(1,1)]"
+    
+    2. Connected jack name: "pld0:in6[UDB=(0,0)]"
+    
+    3. Connected jack name: "pld0:in6[UDB=(1,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_postpoll\" on jack "pld1:out3[UDB=(0,0)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "dp:in0[UDB=(1,1)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_count_0\" on jack "statctrl:out0[UDB=(0,0)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld1:in7[UDB=(0,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_count_1\" on jack "statctrl:out1[UDB=(0,0)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld1:in2[UDB=(0,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_count_2\" on jack "statctrl:out2[UDB=(0,0)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld1:in1[UDB=(0,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_count_4\" on jack "statctrl:out4[UDB=(0,0)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld0:in7[UDB=(1,0)]"
+    
+    2. Connected jack name: "pld0:in8[UDB=(0,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_count_5\" on jack "statctrl:out5[UDB=(0,0)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld0:in9[UDB=(0,0)]"
+    
+    2. Connected jack name: "pld0:in9[UDB=(1,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_count_6\" on jack "statctrl:out6[UDB=(0,0)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld0:in10[UDB=(0,0)]"
+    
+    2. Connected jack name: "pld0:in10[UDB=(1,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_last\" on jack "pld0:out0[UDB=(1,0)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld0:in4[UDB=(1,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_load_fifo\" on jack "pld0:out1[UDB=(1,0)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld0:in2[UDB=(1,1)]"
+    
+    2. Connected jack name: "dp:in5[UDB=(1,1)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_state_2\" on jack "pld0:out2[UDB=(1,0)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld0:in1[UDB=(0,0)]"
+    
+    2. Connected jack name: "pld0:in1[UDB=(1,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_state_stop1_reg\" on jack "pld0:out3[UDB=(1,0)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld1:in8[UDB=(1,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_address_detected\" on jack "pld1:out0[UDB=(1,0)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "pld0:in3[UDB=(1,0)]"
+    
+    2. Connected jack name: "dp:in3[UDB=(1,1)]"
+    
+    3. Connected jack name: "pld0:in4[UDB=(0,0)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_status_5\" on jack "pld1:out2[UDB=(1,0)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "statctrl:inout1[UDB=(1,1)]"
+    
+    
+
+Found signal "Net_12" on jack "statctrl:out0[UDB=(1,0)]".
+Number of connected bvjacks: 8.
+
+    1. Connected jack name: "pld0:in4[UDB=(1,3)]"
+    
+    2. Connected jack name: "dp:in4[UDB=(0,3)]"
+    
+    3. Connected jack name: "dp:in4[UDB=(1,3)]"
+    
+    4. Connected jack name: "clkrst:in0[UDB=(1,3)]"
+    
+    5. Connected jack name: "pld1:in11[UDB=(1,2)]"
+    
+    6. Connected jack name: "pld0:in11[UDB=(1,2)]"
+    
+    7. Connected jack name: "pld0:in4[UDB=(1,1)]"
+    
+    8. Connected jack name: "pld1:in11[UDB=(1,1)]"
+    
+    
+
+Found signal "MODIN1_1" on jack "pld0:out2[UDB=(0,1)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "pld0:in1[UDB=(0,1)]"
+    
+    2. Connected jack name: "pld1:in10[UDB=(0,1)]"
+    
+    3. Connected jack name: "pld0:in6[UDB=(0,3)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:capture_last\" on jack "pld1:out1[UDB=(0,1)]".
+Number of connected bvjacks: 4.
+
+    1. Connected jack name: "pld1:in5[UDB=(0,1)]"
+    
+    2. Connected jack name: "pld0:in10[UDB=(0,3)]"
+    
+    3. Connected jack name: "pld0:in10[UDB=(0,2)]"
+    
+    4. Connected jack name: "pld0:in5[UDB=(0,1)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:capt_int_temp\" on jack "pld1:out2[UDB=(0,1)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "statctrl:in1[UDB=(0,2)]"
+    
+    
+
+Found signal "MODIN2_0" on jack "statctrl:out0[UDB=(0,1)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "pld0:in4[UDB=(0,3)]"
+    
+    2. Connected jack name: "pld0:in4[UDB=(0,1)]"
+    
+    3. Connected jack name: "pld1:in7[UDB=(0,1)]"
+    
+    
+
+Found signal "MODIN2_1" on jack "statctrl:out1[UDB=(0,1)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "pld0:in1[UDB=(0,3)]"
+    
+    2. Connected jack name: "pld0:in10[UDB=(0,1)]"
+    
+    3. Connected jack name: "pld1:in2[UDB=(0,1)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:control_4\" on jack "statctrl:out4[UDB=(0,1)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld1:in7[UDB=(0,3)]"
+    
+    2. Connected jack name: "pld0:in8[UDB=(0,2)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:control_7\" on jack "statctrl:out7[UDB=(0,1)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld1:in11[UDB=(0,3)]"
+    
+    2. Connected jack name: "pld0:in4[UDB=(0,2)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_status_4\" on jack "pld0:out0[UDB=(1,1)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "statctrl:inout0[UDB=(1,1)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:capt_int_temp\" on jack "pld0:out1[UDB=(1,1)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "statctrl:in1[UDB=(1,3)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:int_capt_count_0\" on jack "pld1:out1[UDB=(1,1)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "pld0:in6[UDB=(1,3)]"
+    
+    2. Connected jack name: "pld1:in5[UDB=(1,1)]"
+    
+    3. Connected jack name: "pld0:in10[UDB=(1,1)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_fifofull\" on jack "dp:out0[UDB=(1,1)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld0:in6[UDB=(1,1)]"
+    
+    
+
+Found signal "\Pixy_UART:BUART:rx_fifonotempty\" on jack "dp:out4[UDB=(1,1)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld1:in1[UDB=(1,0)]"
+    
+    
+
+Found signal "Net_743" on jack "statctrl:inout3[UDB=(1,1)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "interrupt_jack[IntrHod=(0)][IntrId=(2)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:trig_reg\" on jack "pld0:out0[UDB=(0,2)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "dp:in0[UDB=(0,2)]"
+    
+    2. Connected jack name: "dp:in3[UDB=(1,2)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:trig_fall_detected\" on jack "pld0:out1[UDB=(0,2)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld0:in1[UDB=(0,2)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:capt_fifo_load\" on jack "pld0:out2[UDB=(0,2)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "dp:in5[UDB=(0,2)]"
+    
+    2. Connected jack name: "dp:in5[UDB=(1,2)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:trig_rise_detected\" on jack "pld0:out3[UDB=(0,2)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld1:in10[UDB=(0,3)]"
+    
+    2. Connected jack name: "pld0:in7[UDB=(0,2)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:status_2\" on jack "dp:out0[UDB=(0,2)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "statctrl:in2[UDB=(0,2)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:status_3\" on jack "dp:out1[UDB=(0,2)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "statctrl:in3[UDB=(0,2)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:per_zero\" on jack "dp:out4[UDB=(0,2)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "pld1:in1[UDB=(0,3)]"
+    
+    2. Connected jack name: "dp:in2[UDB=(0,2)]"
+    
+    3. Connected jack name: "dp:in2[UDB=(1,2)]"
+    
+    
+
+Found signal "Net_421" on jack "statctrl:inout3[UDB=(0,2)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "interrupt_jack[IntrHod=(0)][IntrId=(3)]"
+    
+    2. Connected jack name: "pld1:in8[UDB=(0,3)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:trig_fall_detected\" on jack "pld0:out0[UDB=(1,2)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld0:in4[UDB=(1,2)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:capture_last\" on jack "pld0:out1[UDB=(1,2)]".
+Number of connected bvjacks: 4.
+
+    1. Connected jack name: "pld0:in5[UDB=(1,3)]"
+    
+    2. Connected jack name: "pld0:in5[UDB=(1,1)]"
+    
+    3. Connected jack name: "pld1:in10[UDB=(1,1)]"
+    
+    4. Connected jack name: "pld0:in5[UDB=(1,2)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:trig_rise_detected\" on jack "pld0:out2[UDB=(1,2)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld0:in6[UDB=(1,2)]"
+    
+    2. Connected jack name: "pld1:in9[UDB=(1,2)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:run_mode\" on jack "pld0:out3[UDB=(1,2)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld1:in8[UDB=(1,2)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:trig_reg\" on jack "pld1:out0[UDB=(1,2)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "dp:in3[UDB=(0,3)]"
+    
+    2. Connected jack name: "dp:in3[UDB=(1,3)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:timer_enable\" on jack "pld1:out1[UDB=(1,2)]".
+Number of connected bvjacks: 4.
+
+    1. Connected jack name: "pld0:in10[UDB=(1,3)]"
+    
+    2. Connected jack name: "pld0:in1[UDB=(1,1)]"
+    
+    3. Connected jack name: "pld1:in6[UDB=(1,1)]"
+    
+    4. Connected jack name: "pld1:in6[UDB=(1,2)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:trig_disable\" on jack "pld1:out2[UDB=(1,2)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld1:in5[UDB=(1,2)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:status_tc\" on jack "pld1:out3[UDB=(1,2)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "statctrl:in0[UDB=(1,3)]"
+    
+    
+
+Found signal "MODIN1_0" on jack "pld0:out0[UDB=(0,3)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "pld1:in11[UDB=(0,1)]"
+    
+    2. Connected jack name: "pld0:in0[UDB=(0,1)]"
+    
+    3. Connected jack name: "pld0:in8[UDB=(0,3)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:timer_enable\" on jack "pld1:out0[UDB=(0,3)]".
+Number of connected bvjacks: 5.
+
+    1. Connected jack name: "pld0:in3[UDB=(0,1)]"
+    
+    2. Connected jack name: "pld1:in8[UDB=(0,1)]"
+    
+    3. Connected jack name: "pld0:in3[UDB=(0,2)]"
+    
+    4. Connected jack name: "pld1:in5[UDB=(0,3)]"
+    
+    5. Connected jack name: "pld0:in3[UDB=(0,3)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:trig_disable\" on jack "pld1:out1[UDB=(0,3)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld1:in2[UDB=(0,3)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:run_mode\" on jack "pld1:out2[UDB=(0,3)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "pld1:in6[UDB=(0,3)]"
+    
+    
+
+Found signal "\TiltTime:TimerUDB:status_tc\" on jack "pld1:out3[UDB=(0,3)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "statctrl:in0[UDB=(0,2)]"
+    
+    
+
+Found signal "Net_420" on jack "statctrl:out0[UDB=(0,3)]".
+Number of connected bvjacks: 8.
+
+    1. Connected jack name: "pld0:in11[UDB=(0,1)]"
+    
+    2. Connected jack name: "pld1:in3[UDB=(0,1)]"
+    
+    3. Connected jack name: "pld0:in11[UDB=(0,2)]"
+    
+    4. Connected jack name: "dp:in4[UDB=(1,2)]"
+    
+    5. Connected jack name: "clkrst:in0[UDB=(0,2)]"
+    
+    6. Connected jack name: "pld0:in11[UDB=(0,3)]"
+    
+    7. Connected jack name: "pld1:in3[UDB=(0,3)]"
+    
+    8. Connected jack name: "dp:in3[UDB=(0,2)]"
+    
+    
+
+Found signal "__ONE__" on jack "pld0:out1[UDB=(1,3)]".
+Number of connected bvjacks: 5.
+
+    1. Connected jack name: "ext_start[FFB(Decimator,0)]"
+    
+    2. Connected jack name: "in0[FFB(Timer,2)]"
+    
+    3. Connected jack name: "in0[FFB(Timer,3)]"
+    
+    4. Connected jack name: "in0[FFB(Timer,0)]"
+    
+    5. Connected jack name: "in0[FFB(Timer,1)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:capt_fifo_load\" on jack "pld0:out2[UDB=(1,3)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "dp:in1[UDB=(0,3)]"
+    
+    2. Connected jack name: "dp:in1[UDB=(1,3)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:int_capt_count_1\" on jack "pld0:out3[UDB=(1,3)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "pld0:in7[UDB=(1,1)]"
+    
+    2. Connected jack name: "pld1:in8[UDB=(1,1)]"
+    
+    3. Connected jack name: "pld0:in7[UDB=(1,3)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:status_2\" on jack "dp:out0[UDB=(1,3)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "statctrl:in2[UDB=(1,3)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:status_3\" on jack "dp:out1[UDB=(1,3)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "statctrl:in3[UDB=(1,3)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:per_zero\" on jack "dp:out4[UDB=(1,3)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "dp:in2[UDB=(0,3)]"
+    
+    2. Connected jack name: "dp:in2[UDB=(1,3)]"
+    
+    3. Connected jack name: "pld1:in1[UDB=(1,2)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:control_0\" on jack "statctrl:out0[UDB=(1,3)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "pld0:in8[UDB=(1,1)]"
+    
+    2. Connected jack name: "pld1:in4[UDB=(1,1)]"
+    
+    3. Connected jack name: "pld0:in8[UDB=(1,3)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:control_1\" on jack "statctrl:out1[UDB=(1,3)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "pld0:in9[UDB=(1,1)]"
+    
+    2. Connected jack name: "pld1:in9[UDB=(1,1)]"
+    
+    3. Connected jack name: "pld0:in9[UDB=(1,3)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:control_4\" on jack "statctrl:out4[UDB=(1,3)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld0:in3[UDB=(1,2)]"
+    
+    2. Connected jack name: "pld1:in7[UDB=(1,2)]"
+    
+    
+
+Found signal "\PanTime:TimerUDB:control_7\" on jack "statctrl:out7[UDB=(1,3)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "pld1:in10[UDB=(1,2)]"
+    
+    2. Connected jack name: "pld0:in0[UDB=(1,2)]"
+    
+    
+
+Found signal "Net_378" on jack "statctrl:inout3[UDB=(1,3)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "interrupt_jack[IntrHod=(0)][IntrId=(1)]"
+    
+    2. Connected jack name: "pld1:in4[UDB=(1,2)]"
+    
+    
+
+Found signal "Net_419" on jack "io_ojack_4[IOP=(1)]".
+Number of connected bvjacks: 4.
+
+    1. Connected jack name: "pld0:in6[UDB=(0,2)]"
+    
+    2. Connected jack name: "pld0:in6[UDB=(0,1)]"
+    
+    3. Connected jack name: "pld0:in2[UDB=(0,3)]"
+    
+    4. Connected jack name: "pld1:in1[UDB=(0,1)]"
+    
+    
+
+Found signal "Net_292" on jack "io_ojack_6[IOP=(1)]".
+Number of connected bvjacks: 4.
+
+    1. Connected jack name: "pld0:in2[UDB=(1,3)]"
+    
+    2. Connected jack name: "pld0:in2[UDB=(1,2)]"
+    
+    3. Connected jack name: "pld0:in3[UDB=(1,1)]"
+    
+    4. Connected jack name: "pld1:in7[UDB=(1,1)]"
+    
+    
+
+Found signal "Net_717" on jack "io_ojack_3[IOP=(5)]".
+Number of connected bvjacks: 3.
+
+    1. Connected jack name: "pld0:in0[UDB=(1,0)]"
+    
+    2. Connected jack name: "pld1:in0[UDB=(0,0)]"
+    
+    3. Connected jack name: "pld0:in11[UDB=(0,0)]"
+    
+    
+
+Found signal "\ADC:Net_487_local\" on jack "dclk[5][FFB(Clock,0)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "extclk_cp_udb[FFB(DSM,0)]"
+    
+    
+
+Found signal "Net_748_local" on jack "dclk[7][FFB(Clock,0)]".
+Number of connected bvjacks: 1.
+
+    1. Connected jack name: "interrupt_jack[IntrHod=(0)][IntrId=(0)]"
+    
+    
+
+Found signal "Net_505" on jack "interrupt[FFB(Decimator,0)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "interrupt_jack[IntrHod=(0)][IntrId=(29)]"
+    
+    2. Connected jack name: "interrupt_jack[IntrHod=(0)][IntrId=(4)]"
+    
+    
+
+Found signal "Net_196" on jack "cmp[FFB(Timer,0)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "io_ijack_5[IOP=(0)]"
+    
+    2. Connected jack name: "io_ijack_7[IOP=(0)]"
+    
+    
+
+Found signal "Net_155" on jack "cmp[FFB(Timer,1)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "io_ijack_5[IOP=(3)]"
+    
+    2. Connected jack name: "io_ijack_7[IOP=(3)]"
+    
+    
+
+Found signal "Net_181" on jack "cmp[FFB(Timer,2)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "io_ijack_1[IOP=(0)]"
+    
+    2. Connected jack name: "io_ijack_3[IOP=(0)]"
+    
+    
+
+Found signal "Net_134" on jack "cmp[FFB(Timer,3)]".
+Number of connected bvjacks: 2.
+
+    1. Connected jack name: "io_ijack_1[IOP=(3)]"
+    
+    2. Connected jack name: "io_ijack_3[IOP=(3)]"
+    
+    
+
+
+---------Verifying signals (routing).---------
+
+
+---------Verifying configuration.---------
+
+
+
+----------------------------------------------------------------------
+
+Bitstream verification passed.
+
+-----------------------------------------------------------------------
+

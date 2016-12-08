@@ -1,0 +1,277 @@
+C51 COMPILER V9.03   PIXY_UART_INT                                                         05/02/2016 22:50:17 PAGE 1   
+
+
+C51 COMPILER V9.03, COMPILATION OF MODULE PIXY_UART_INT
+OBJECT MODULE PLACED IN .\DP8051\DP8051_Keil_903\Debug\Pixy_UART_INT.obj
+COMPILER INVOKED BY: C:\Program Files\Cypress\PSoC Creator\2.1\PSoC Creator\import\keil\pk51\9.03\C51\BIN\c51.exe .\Gene
+                    -rated_Source\PSoC3\Pixy_UART_INT.c NOIV LARGE MODDP2 OMF2 VB(1) PR(.\DP8051\DP8051_Keil_903\Debug\Pixy_UART_INT.lst) CD 
+                    -DB NOIP OT(2,SIZE) INCDIR(Generated_Source\PSoC3) OJ(.\DP8051\DP8051_Keil_903\Debug\Pixy_UART_INT.obj)
+
+line level    source
+
+   1          /*******************************************************************************
+   2          * File Name: Pixy_UART_INT.c
+   3          * Version 2.20
+   4          *
+   5          * Description:
+   6          *  This file provides all Interrupt Service functionality of the UART component
+   7          *
+   8          * Note:
+   9          *  Any unusual or non-standard behavior should be noted here. Other-
+  10          *  wise, this section should remain blank.
+  11          *
+  12          ********************************************************************************
+  13          * Copyright 2008-2012, Cypress Semiconductor Corporation.  All rights reserved.
+  14          * You may use this file only in accordance with the license, terms, conditions, 
+  15          * disclaimers, and limitations in the end user license agreement accompanying 
+  16          * the software package with which this file was provided.
+  17          *******************************************************************************/
+  18          
+  19          #include "Pixy_UART.h"
+  20          #include "CyLib.h"
+  21          
+  22          
+  23          /***************************************
+  24          * Custom Declratations
+  25          ***************************************/
+  26          /* `#START CUSTOM_DECLARATIONS` Place your declaration here */
+  27          
+  28          /* `#END` */
+  29          
+  30          #if( (Pixy_UART_RX_ENABLED || Pixy_UART_HD_ENABLED) && \
+  31               (Pixy_UART_RXBUFFERSIZE > Pixy_UART_FIFO_LENGTH))
+              
+                  extern volatile uint8 Pixy_UART_rxBuffer[];
+                  extern volatile uint8 Pixy_UART_rxBufferRead;
+                  extern volatile uint8 Pixy_UART_rxBufferWrite;
+                  extern volatile uint8 Pixy_UART_rxBufferLoopDetect;
+                  extern volatile uint8 Pixy_UART_rxBufferOverflow;
+                  #if (Pixy_UART_RXHW_ADDRESS_ENABLED)
+                      extern volatile uint8 Pixy_UART_rxAddressMode;
+                      extern volatile uint8 Pixy_UART_rxAddressDetected;
+                  #endif /* End EnableHWAddress */    
+              
+                  /*******************************************************************************
+                  * Function Name: Pixy_UART_RXISR
+                  ********************************************************************************
+                  *
+                  * Summary:
+                  *  Interrupt Service Routine for RX portion of the UART
+                  *
+                  * Parameters:
+                  *  None.
+                  *
+                  * Return:
+C51 COMPILER V9.03   PIXY_UART_INT                                                         05/02/2016 22:50:17 PAGE 2   
+
+                  *  None.
+                  *
+                  * Global Variables:
+                  *  Pixy_UART_rxBuffer - RAM buffer pointer for save received data.
+                  *  Pixy_UART_rxBufferWrite - cyclic index for write to rxBuffer, 
+                  *     increments after each byte saved to buffer.
+                  *  Pixy_UART_rxBufferRead - cyclic index for read from rxBuffer, 
+                  *     checked to detect overflow condition.
+                  *  Pixy_UART_rxBufferOverflow - software overflow flag. Set to one
+                  *     when Pixy_UART_rxBufferWrite index overtakes 
+                  *     Pixy_UART_rxBufferRead index.
+                  *  Pixy_UART_rxBufferLoopDetect - additional variable to detect overflow.
+                  *     Set to one when Pixy_UART_rxBufferWrite is equal to 
+                  *    Pixy_UART_rxBufferRead
+                  *  Pixy_UART_rxAddressMode - this variable contains the Address mode, 
+                  *     selected in customizer or set by UART_SetRxAddressMode() API.
+                  *  Pixy_UART_rxAddressDetected - set to 1 when correct address received,
+                  *     and analysed to store following addressed data bytes to the buffer.
+                  *     When not correct address received, set to 0 to skip following data bytes.
+                  *
+                  *******************************************************************************/
+                  CY_ISR(Pixy_UART_RXISR)
+                  {
+                      uint8 readData;
+                      uint8 increment_pointer = 0u;
+              
+                      /* User code required at start of ISR */
+                      /* `#START Pixy_UART_RXISR_START` */
+              
+                      /* `#END` */
+              
+                      readData = Pixy_UART_RXSTATUS_REG;
+              
+                      if((readData & (Pixy_UART_RX_STS_BREAK | Pixy_UART_RX_STS_PAR_ERROR |
+                                      Pixy_UART_RX_STS_STOP_ERROR | Pixy_UART_RX_STS_OVERRUN)) != 0u)
+                      {
+                          /* ERROR handling. */
+                          /* `#START Pixy_UART_RXISR_ERROR` */
+              
+                          /* `#END` */
+                      }
+              
+                      while(readData & Pixy_UART_RX_STS_FIFO_NOTEMPTY)
+                      {
+                          
+                          #if (Pixy_UART_RXHW_ADDRESS_ENABLED)
+                              if(Pixy_UART_rxAddressMode == Pixy_UART__B_UART__AM_SW_DETECT_TO_BUFFER) 
+                              {
+                                  if((readData & Pixy_UART_RX_STS_MRKSPC) != 0u)
+                                  {  
+                                      if ((readData & Pixy_UART_RX_STS_ADDR_MATCH) != 0u)
+                                      {
+                                          Pixy_UART_rxAddressDetected = 1u;
+                                      }
+                                      else
+                                      {
+                                          Pixy_UART_rxAddressDetected = 0u;
+                                      }
+                                  }
+              
+                                  readData = Pixy_UART_RXDATA_REG;
+                                  if(Pixy_UART_rxAddressDetected != 0u)
+C51 COMPILER V9.03   PIXY_UART_INT                                                         05/02/2016 22:50:17 PAGE 3   
+
+                                  {   /* store only addressed data */
+                                      Pixy_UART_rxBuffer[Pixy_UART_rxBufferWrite] = readData;
+                                      increment_pointer = 1u;
+                                  }
+                              }
+                              else /* without software addressing */
+                              {
+                                  Pixy_UART_rxBuffer[Pixy_UART_rxBufferWrite] = Pixy_UART_RXDATA_REG;
+                                  increment_pointer = 1u;
+                              }
+                          #else  /* without addressing */
+                              Pixy_UART_rxBuffer[Pixy_UART_rxBufferWrite] = Pixy_UART_RXDATA_REG;
+                              increment_pointer = 1u;
+                          #endif /* End SW_DETECT_TO_BUFFER */
+                          
+                          /* do not increment buffer pointer when skip not adderessed data */
+                          if( increment_pointer != 0u )
+                          {
+                              if(Pixy_UART_rxBufferLoopDetect)
+                              {   /* Set Software Buffer status Overflow */
+                                  Pixy_UART_rxBufferOverflow = 1u;
+                              }
+                              /* Set next pointer. */
+                              Pixy_UART_rxBufferWrite++;
+              
+                              /* Check pointer for a loop condition */
+                              if(Pixy_UART_rxBufferWrite >= Pixy_UART_RXBUFFERSIZE)
+                              {
+                                  Pixy_UART_rxBufferWrite = 0u;
+                              }
+                              /* Detect pre-overload condition and set flag */
+                              if(Pixy_UART_rxBufferWrite == Pixy_UART_rxBufferRead)
+                              {
+                                  Pixy_UART_rxBufferLoopDetect = 1u;
+                                  /* When Hardware Flow Control selected */
+                                  #if(Pixy_UART_FLOW_CONTROL != 0u)
+                                  /* Disable RX interrupt mask, it will be enabled when user read data from the buffer u
+             -sing APIs */
+                                      Pixy_UART_RXSTATUS_MASK_REG  &= ~Pixy_UART_RX_STS_FIFO_NOTEMPTY;
+                                      CyIntClearPending(Pixy_UART_RX_VECT_NUM); 
+                                      break; /* Break the reading of the FIFO loop, leave the data there for generating 
+             -RTS signal */
+                                  #endif /* End Pixy_UART_FLOW_CONTROL != 0 */    
+                              }
+                          }
+              
+                          /* Check again if there is data. */
+                          readData = Pixy_UART_RXSTATUS_REG;
+                      }
+              
+                      /* User code required at end of ISR (Optional) */
+                      /* `#START Pixy_UART_RXISR_END` */
+              
+                      /* `#END` */
+              
+                  }
+              
+              #endif /* End Pixy_UART_RX_ENABLED && (Pixy_UART_RXBUFFERSIZE > Pixy_UART_FIFO_LENGTH) */
+ 172          
+ 173          
+ 174          #if(Pixy_UART_TX_ENABLED && (Pixy_UART_TXBUFFERSIZE > Pixy_UART_FIFO_LENGTH))
+              
+C51 COMPILER V9.03   PIXY_UART_INT                                                         05/02/2016 22:50:17 PAGE 4   
+
+                  extern volatile uint8 Pixy_UART_txBuffer[];
+                  extern volatile uint8 Pixy_UART_txBufferRead;
+                  extern uint8 Pixy_UART_txBufferWrite;
+              
+              
+                  /*******************************************************************************
+                  * Function Name: Pixy_UART_TXISR
+                  ********************************************************************************
+                  *
+                  * Summary:
+                  * Interrupt Service Routine for the TX portion of the UART
+                  *
+                  * Parameters:
+                  *  None.
+                  *
+                  * Return:
+                  *  None.
+                  *
+                  * Global Variables:
+                  *  Pixy_UART_txBuffer - RAM buffer pointer for transmit data from.
+                  *  Pixy_UART_txBufferRead - cyclic index for read and transmit data 
+                  *     from txBuffer, increments after each transmited byte.
+                  *  Pixy_UART_rxBufferWrite - cyclic index for write to txBuffer, 
+                  *     checked to detect available for transmission bytes.
+                  *
+                  *******************************************************************************/
+                  CY_ISR(Pixy_UART_TXISR)
+                  {
+              
+                      /* User code required at start of ISR */
+                      /* `#START Pixy_UART_TXISR_START` */
+              
+                      /* `#END` */
+              
+                      while((Pixy_UART_txBufferRead != Pixy_UART_txBufferWrite) && \
+                           !(Pixy_UART_TXSTATUS_REG & Pixy_UART_TX_STS_FIFO_FULL))
+                      {
+                          /* Check pointer. */
+                          if(Pixy_UART_txBufferRead >= Pixy_UART_TXBUFFERSIZE)
+                          {
+                              Pixy_UART_txBufferRead = 0u;
+                          }
+              
+                          Pixy_UART_TXDATA_REG = Pixy_UART_txBuffer[Pixy_UART_txBufferRead];
+              
+                          /* Set next pointer. */
+                          Pixy_UART_txBufferRead++;
+                      }
+              
+                      /* User code required at end of ISR (Optional) */
+                      /* `#START Pixy_UART_TXISR_END` */
+              
+                      /* `#END` */
+                      
+                  }
+              
+              #endif /* End Pixy_UART_TX_ENABLED && (Pixy_UART_TXBUFFERSIZE > Pixy_UART_FIFO_LENGTH) */
+ 233          
+ 234          
+ 235          /* [] END OF FILE */
+C51 COMPILER V9.03   PIXY_UART_INT                                                         05/02/2016 22:50:17 PAGE 5   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   ----    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

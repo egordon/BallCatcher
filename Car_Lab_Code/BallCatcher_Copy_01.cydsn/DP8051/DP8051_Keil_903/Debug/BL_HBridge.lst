@@ -1,0 +1,938 @@
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 1   
+
+
+C51 COMPILER V9.03, COMPILATION OF MODULE BL_HBRIDGE
+OBJECT MODULE PLACED IN .\DP8051\DP8051_Keil_903\Debug\BL_HBridge.obj
+COMPILER INVOKED BY: C:\Program Files\Cypress\PSoC Creator\2.1\PSoC Creator\import\keil\pk51\9.03\C51\BIN\c51.exe .\Gene
+                    -rated_Source\PSoC3\BL_HBridge.c NOIV LARGE MODDP2 OMF2 VB(1) PR(.\DP8051\DP8051_Keil_903\Debug\BL_HBridge.lst) CD DB NOI
+                    -P OT(2,SIZE) INCDIR(Generated_Source\PSoC3) OJ(.\DP8051\DP8051_Keil_903\Debug\BL_HBridge.obj)
+
+line level    source
+
+   1          /*******************************************************************************
+   2          * File Name: BL_HBridge.c  
+   3          * Version 2.20
+   4          *
+   5          * Description:
+   6          *  The PWM User Module consist of an 8 or 16-bit counter with two 8 or 16-bit
+   7          *  comparitors. Each instance of this user module is capable of generating
+   8          *  two PWM outputs with the same period. The pulse width is selectable between
+   9          *  1 and 255/65535. The period is selectable between 2 and 255/65536 clocks. 
+  10          *  The compare value output may be configured to be active when the present 
+  11          *  counter is less than or less than/equal to the compare value.
+  12          *  A terminal count output is also provided. It generates a pulse one clock
+  13          *  width wide when the counter is equal to zero.
+  14          *
+  15          * Note:
+  16          *
+  17          *******************************************************************************
+  18          * Copyright 2008-2012, Cypress Semiconductor Corporation.  All rights reserved.
+  19          * You may use this file only in accordance with the license, terms, conditions, 
+  20          * disclaimers, and limitations in the end user license agreement accompanying 
+  21          * the software package with which this file was provided.
+  22          ********************************************************************************/
+  23          
+  24          #include "cytypes.h"
+  25          #include "BL_HBridge.h"
+  26          
+  27          uint8 BL_HBridge_initVar = 0u;
+  28          
+  29          
+  30          /*******************************************************************************
+  31          * Function Name: BL_HBridge_Start
+  32          ********************************************************************************
+  33          *
+  34          * Summary:
+  35          *  The start function initializes the pwm with the default values, the 
+  36          *  enables the counter to begin counting.  It does not enable interrupts,
+  37          *  the EnableInt command should be called if interrupt generation is required.
+  38          *
+  39          * Parameters:  
+  40          *  void  
+  41          *
+  42          * Return: 
+  43          *  void
+  44          *
+  45          * Global variables:
+  46          *  BL_HBridge_initVar: Is modified when this function is called for the 
+  47          *   first time. Is used to ensure that initialization happens only once.
+  48          *
+  49          *******************************************************************************/
+  50          void BL_HBridge_Start(void) 
+  51          {
+  52   1          /* If not Initialized then initialize all required hardware and software */
+  53   1          if(BL_HBridge_initVar == 0u)
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 2   
+
+  54   1          {
+  55   2              BL_HBridge_Init();
+  56   2              BL_HBridge_initVar = 1u;
+  57   2          }
+  58   1          BL_HBridge_Enable();
+  59   1      
+  60   1      }
+  61          
+  62          
+  63          /*******************************************************************************
+  64          * Function Name: BL_HBridge_Init
+  65          ********************************************************************************
+  66          *
+  67          * Summary:
+  68          *  Initialize component's parameters to the parameters set by user in the 
+  69          *  customizer of the component placed onto schematic. Usually called in 
+  70          *  BL_HBridge_Start().
+  71          *
+  72          * Parameters:  
+  73          *  void
+  74          *
+  75          * Return: 
+  76          *  void
+  77          *
+  78          *******************************************************************************/
+  79          void BL_HBridge_Init(void) 
+  80          {
+  81   1          #if (BL_HBridge_UsingFixedFunction || BL_HBridge_UseControl)
+  82   1              uint8 ctrl;
+  83   1          #endif /* (BL_HBridge_UsingFixedFunction || BL_HBridge_UseControl) */
+  84   1          
+  85   1          #if(!BL_HBridge_UsingFixedFunction) 
+                      #if(BL_HBridge_UseStatus)
+                          /* Interrupt State Backup for Critical Region*/
+                          uint8 BL_HBridge_interruptState;
+                      #endif /* (BL_HBridge_UseStatus) */
+                  #endif /* (!BL_HBridge_UsingFixedFunction) */
+  91   1          
+  92   1          #if (BL_HBridge_UsingFixedFunction)
+  93   1              /* You are allowed to write the compare value (FF only) */
+  94   1              BL_HBridge_CONTROL |= BL_HBridge_CFG0_MODE;
+  95   1              #if (BL_HBridge_DeadBand2_4)
+                          BL_HBridge_CONTROL |= BL_HBridge_CFG0_DB;
+                      #endif /* (BL_HBridge_DeadBand2_4) */
+  98   1                      
+  99   1              /* Set the default Compare Mode */
+ 100   1              #if(CY_PSOC5A)
+                              ctrl = BL_HBridge_CONTROL2 & ~BL_HBridge_CTRL_CMPMODE1_MASK;
+                              BL_HBridge_CONTROL2 = ctrl | BL_HBridge_DEFAULT_COMPARE1_MODE;
+                      #endif /* (CY_PSOC5A) */
+ 104   1              #if(CY_PSOC3 || CY_PSOC5LP)
+ 105   1                      ctrl = BL_HBridge_CONTROL3 & ~BL_HBridge_CTRL_CMPMODE1_MASK;
+ 106   1                      BL_HBridge_CONTROL3 = ctrl | BL_HBridge_DEFAULT_COMPARE1_MODE;
+ 107   1              #endif /* (CY_PSOC3 || CY_PSOC5LP) */
+ 108   1              
+ 109   1               /* Clear and Set SYNCTC and SYNCCMP bits of RT1 register */
+ 110   1              BL_HBridge_RT1 &= ~BL_HBridge_RT1_MASK;
+ 111   1              BL_HBridge_RT1 |= BL_HBridge_SYNC;     
+ 112   1                      
+ 113   1              /*Enable DSI Sync all all inputs of the PWM*/
+ 114   1              BL_HBridge_RT1 &= ~(BL_HBridge_SYNCDSI_MASK);
+ 115   1              BL_HBridge_RT1 |= BL_HBridge_SYNCDSI_EN;
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 3   
+
+ 116   1             
+ 117   1          #elif (BL_HBridge_UseControl)
+                      /* Set the default compare mode defined in the parameter */
+                      ctrl = BL_HBridge_CONTROL & ~BL_HBridge_CTRL_CMPMODE2_MASK & ~BL_HBridge_CTRL_CMPMODE1_MASK;
+                      BL_HBridge_CONTROL = ctrl | BL_HBridge_DEFAULT_COMPARE2_MODE | 
+                                                 BL_HBridge_DEFAULT_COMPARE1_MODE;
+                  #endif /* (BL_HBridge_UsingFixedFunction) */
+ 123   1              
+ 124   1          #if (!BL_HBridge_UsingFixedFunction)
+                      #if (BL_HBridge_Resolution == 8)
+                          /* Set FIFO 0 to 1 byte register for period*/
+                          BL_HBridge_AUX_CONTROLDP0 |= (BL_HBridge_AUX_CTRL_FIFO0_CLR);
+                      #else /* (BL_HBridge_Resolution == 16)*/
+                          /* Set FIFO 0 to 1 byte register for period */
+                          BL_HBridge_AUX_CONTROLDP0 |= (BL_HBridge_AUX_CTRL_FIFO0_CLR);
+                          BL_HBridge_AUX_CONTROLDP1 |= (BL_HBridge_AUX_CTRL_FIFO0_CLR);
+                      #endif /* (BL_HBridge_Resolution == 8) */
+              
+                      BL_HBridge_WriteCounter(BL_HBridge_INIT_PERIOD_VALUE);
+                  #endif /* (!BL_HBridge_UsingFixedFunction) */
+ 136   1              
+ 137   1          BL_HBridge_WritePeriod(BL_HBridge_INIT_PERIOD_VALUE);
+ 138   1      
+ 139   1              #if (BL_HBridge_UseOneCompareMode)
+ 140   1                  BL_HBridge_WriteCompare(BL_HBridge_INIT_COMPARE_VALUE1);
+ 141   1              #else
+                          BL_HBridge_WriteCompare1(BL_HBridge_INIT_COMPARE_VALUE1);
+                          BL_HBridge_WriteCompare2(BL_HBridge_INIT_COMPARE_VALUE2);
+                      #endif /* (BL_HBridge_UseOneCompareMode) */
+ 145   1              
+ 146   1              #if (BL_HBridge_KillModeMinTime)
+                          BL_HBridge_WriteKillTime(BL_HBridge_MinimumKillTime);
+                      #endif /* (BL_HBridge_KillModeMinTime) */
+ 149   1              
+ 150   1              #if (BL_HBridge_DeadBandUsed)
+                          BL_HBridge_WriteDeadTime(BL_HBridge_INIT_DEAD_TIME);
+                      #endif /* (BL_HBridge_DeadBandUsed) */
+ 153   1      
+ 154   1          #if (BL_HBridge_UseStatus || BL_HBridge_UsingFixedFunction)
+ 155   1              BL_HBridge_SetInterruptMode(BL_HBridge_INIT_INTERRUPTS_MODE);
+ 156   1          #endif /* (BL_HBridge_UseStatus || BL_HBridge_UsingFixedFunction) */
+ 157   1              
+ 158   1          #if (BL_HBridge_UsingFixedFunction)
+ 159   1              /* Globally Enable the Fixed Function Block chosen */
+ 160   1              BL_HBridge_GLOBAL_ENABLE |= BL_HBridge_BLOCK_EN_MASK;
+ 161   1              /* Set the Interrupt source to come from the status register */
+ 162   1              BL_HBridge_CONTROL2 |= BL_HBridge_CTRL2_IRQ_SEL;
+ 163   1          #else
+                      #if(BL_HBridge_UseStatus)
+                          
+                          /* CyEnterCriticalRegion and CyExitCriticalRegion are used to mark following region critical*/
+                          /* Enter Critical Region*/
+                          BL_HBridge_interruptState = CyEnterCriticalSection();
+                          /* Use the interrupt output of the status register for IRQ output */
+                          BL_HBridge_STATUS_AUX_CTRL |= BL_HBridge_STATUS_ACTL_INT_EN_MASK;
+                          
+                           /* Exit Critical Region*/
+                          CyExitCriticalSection(BL_HBridge_interruptState);
+                          
+                          /* Clear the FIFO to enable the BL_HBridge_STATUS_FIFOFULL
+                                 bit to be set on FIFO full. */
+                          BL_HBridge_ClearFIFO();
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 4   
+
+                      #endif /* (BL_HBridge_UseStatus) */
+                  #endif /* (BL_HBridge_UsingFixedFunction) */
+ 180   1      }
+ 181          
+ 182          
+ 183          /*******************************************************************************
+ 184          * Function Name: BL_HBridge_Enable
+ 185          ********************************************************************************
+ 186          *
+ 187          * Summary: 
+ 188          *  Enables the PWM block operation
+ 189          *
+ 190          * Parameters:  
+ 191          *  void
+ 192          *
+ 193          * Return: 
+ 194          *  void
+ 195          *
+ 196          * Side Effects: 
+ 197          *  This works only if software enable mode is chosen
+ 198          *
+ 199          *******************************************************************************/
+ 200          void BL_HBridge_Enable(void) 
+ 201          {
+ 202   1          /* Globally Enable the Fixed Function Block chosen */
+ 203   1          #if (BL_HBridge_UsingFixedFunction)
+ 204   1              BL_HBridge_GLOBAL_ENABLE |= BL_HBridge_BLOCK_EN_MASK;
+ 205   1              BL_HBridge_GLOBAL_STBY_ENABLE |= BL_HBridge_BLOCK_STBY_EN_MASK;
+ 206   1          #endif /* (BL_HBridge_UsingFixedFunction) */
+ 207   1          
+ 208   1          /* Enable the PWM from the control register  */
+ 209   1          #if (BL_HBridge_UseControl || BL_HBridge_UsingFixedFunction)
+ 210   1              BL_HBridge_CONTROL |= BL_HBridge_CTRL_ENABLE;
+ 211   1          #endif /* (BL_HBridge_UseControl || BL_HBridge_UsingFixedFunction) */
+ 212   1      }
+ 213          
+ 214          
+ 215          /*******************************************************************************
+ 216          * Function Name: BL_HBridge_Stop
+ 217          ********************************************************************************
+ 218          *
+ 219          * Summary:
+ 220          *  The stop function halts the PWM, but does not change any modes or disable
+ 221          *  interrupts.
+ 222          *
+ 223          * Parameters:  
+ 224          *  void  
+ 225          *
+ 226          * Return: 
+ 227          *  void
+ 228          *
+ 229          * Side Effects:
+ 230          *  If the Enable mode is set to Hardware only then this function
+ 231          *  has no effect on the operation of the PWM
+ 232          *
+ 233          *******************************************************************************/
+ 234          void BL_HBridge_Stop(void) 
+ 235          {
+ 236   1          #if (BL_HBridge_UseControl || BL_HBridge_UsingFixedFunction)
+ 237   1              BL_HBridge_CONTROL &= ~BL_HBridge_CTRL_ENABLE;
+ 238   1          #endif /* (BL_HBridge_UseControl || BL_HBridge_UsingFixedFunction) */
+ 239   1          
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 5   
+
+ 240   1          /* Globally disable the Fixed Function Block chosen */
+ 241   1          #if (BL_HBridge_UsingFixedFunction)
+ 242   1              BL_HBridge_GLOBAL_ENABLE &= ~BL_HBridge_BLOCK_EN_MASK;
+ 243   1              BL_HBridge_GLOBAL_STBY_ENABLE &= ~BL_HBridge_BLOCK_STBY_EN_MASK;
+ 244   1          #endif /* (BL_HBridge_UsingFixedFunction) */
+ 245   1      }
+ 246          
+ 247          
+ 248          #if (BL_HBridge_UseOneCompareMode)
+ 249          #if (BL_HBridge_CompareMode1SW)
+              
+              
+              /*******************************************************************************
+              * Function Name: BL_HBridge_SetCompareMode
+              ********************************************************************************
+              * 
+              * Summary:
+              *  This function writes the Compare Mode for the pwm output when in Dither mode,
+              *  Center Align Mode or One Output Mode.
+              *
+              * Parameters:
+              *  comparemode:  The new compare mode for the PWM output. Use the compare types
+              *                defined in the H file as input arguments.
+              *
+              * Return:
+              *  void
+              *
+              *******************************************************************************/
+              void BL_HBridge_SetCompareMode(uint8 comparemode) 
+              {
+                  #if(BL_HBridge_UsingFixedFunction)
+                      #if(CY_PSOC5A)
+                          uint8 comparemodemasked = (comparemode << BL_HBridge_CTRL_CMPMODE1_SHIFT);
+                          BL_HBridge_CONTROL2 &= ~BL_HBridge_CTRL_CMPMODE1_MASK; /*Clear Existing Data */
+                          BL_HBridge_CONTROL2 |= comparemodemasked;  
+                      #endif /* (CY_PSOC5A) */
+                              
+                      #if(CY_PSOC3 || CY_PSOC5LP)
+                          uint8 comparemodemasked = (comparemode << BL_HBridge_CTRL_CMPMODE1_SHIFT);
+                          BL_HBridge_CONTROL3 &= ~BL_HBridge_CTRL_CMPMODE1_MASK; /*Clear Existing Data */
+                          BL_HBridge_CONTROL3 |= comparemodemasked;     
+                      #endif /* (CY_PSOC3 || CY_PSOC5LP) */
+                              
+                  #elif (BL_HBridge_UseControl)
+                      uint8 comparemode1masked = (comparemode << BL_HBridge_CTRL_CMPMODE1_SHIFT) & 
+                                                  BL_HBridge_CTRL_CMPMODE1_MASK;
+                      uint8 comparemode2masked = (comparemode << BL_HBridge_CTRL_CMPMODE2_SHIFT) & 
+                                                 BL_HBridge_CTRL_CMPMODE2_MASK;
+                      /*Clear existing mode */
+                      BL_HBridge_CONTROL &= ~(BL_HBridge_CTRL_CMPMODE1_MASK | BL_HBridge_CTRL_CMPMODE2_MASK); 
+                      BL_HBridge_CONTROL |= (comparemode1masked | comparemode2masked);
+                      
+                  #else
+                      uint8 temp = comparemode;
+                  #endif /* (BL_HBridge_UsingFixedFunction) */
+              }
+              #endif /* BL_HBridge_CompareMode1SW */
+ 297          
+ 298          #else /* UseOneCompareMode */
+              
+              
+              #if (BL_HBridge_CompareMode1SW)
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 6   
+
+              
+              
+              /*******************************************************************************
+              * Function Name: BL_HBridge_SetCompareMode1
+              ********************************************************************************
+              * 
+              * Summary:
+              *  This function writes the Compare Mode for the pwm or pwm1 output
+              *
+              * Parameters:  
+              *  comparemode:  The new compare mode for the PWM output. Use the compare types
+              *                defined in the H file as input arguments.
+              *
+              * Return: 
+              *  void
+              *
+              *******************************************************************************/
+              void BL_HBridge_SetCompareMode1(uint8 comparemode) 
+              {
+                  uint8 comparemodemasked = (comparemode << BL_HBridge_CTRL_CMPMODE1_SHIFT) & 
+                                             BL_HBridge_CTRL_CMPMODE1_MASK;
+                  #if(BL_HBridge_UsingFixedFunction)
+                      #if(CY_PSOC5A)
+                          BL_HBridge_CONTROL2 &= BL_HBridge_CTRL_CMPMODE1_MASK; /*Clear existing mode */
+                          BL_HBridge_CONTROL2 |= comparemodemasked; 
+                      #endif /* (CY_PSOC5A) */
+                              
+                      #if(CY_PSOC3 || CY_PSOC5LP)
+                          BL_HBridge_CONTROL3 &= BL_HBridge_CTRL_CMPMODE1_MASK; /*Clear existing mode */
+                          BL_HBridge_CONTROL3 |= comparemodemasked; 
+                      #endif /* (CY_PSOC3 || CY_PSOC5LP) */
+                              
+                  #elif (BL_HBridge_UseControl)
+                      BL_HBridge_CONTROL &= BL_HBridge_CTRL_CMPMODE1_MASK; /*Clear existing mode */
+                      BL_HBridge_CONTROL |= comparemodemasked;
+                  #endif    /* (BL_HBridge_UsingFixedFunction) */
+              }
+              #endif /* BL_HBridge_CompareMode1SW */
+              
+              
+              #if (BL_HBridge_CompareMode2SW)
+              
+              
+              /*******************************************************************************
+              * Function Name: BL_HBridge_SetCompareMode2
+              ********************************************************************************
+              * 
+              * Summary:
+              *  This function writes the Compare Mode for the pwm or pwm2 output
+              *
+              * Parameters:  
+              *  comparemode:  The new compare mode for the PWM output. Use the compare types
+              *                defined in the H file as input arguments.
+              *
+              * Return: 
+              *  void
+              *
+              *******************************************************************************/
+              void BL_HBridge_SetCompareMode2(uint8 comparemode) 
+              {
+                  #if(BL_HBridge_UsingFixedFunction)
+                      /* Do Nothing because there is no second Compare Mode Register in FF block */ 
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 7   
+
+                  #elif (BL_HBridge_UseControl)
+                      uint8 comparemodemasked = (comparemode << BL_HBridge_CTRL_CMPMODE2_SHIFT) & 
+                                                           BL_HBridge_CTRL_CMPMODE2_MASK;
+                      BL_HBridge_CONTROL &= BL_HBridge_CTRL_CMPMODE2_MASK; /*Clear existing mode */
+                      BL_HBridge_CONTROL |= comparemodemasked;
+                  #endif /* (BL_HBridge_UsingFixedFunction) */
+              }
+              #endif /*BL_HBridge_CompareMode2SW */
+              #endif /* UseOneCompareMode */
+ 373          
+ 374          
+ 375          #if (!BL_HBridge_UsingFixedFunction)
+              
+              
+              /*******************************************************************************
+              * Function Name: BL_HBridge_WriteCounter
+              ********************************************************************************
+              * 
+              * Summary:
+              *  This function is used to change the counter value.
+              *
+              * Parameters:  
+              *  counter:  This value may be between 1 and (2^Resolution)-1.   
+              *
+              * Return: 
+              *  void
+              *
+              *******************************************************************************/
+              void BL_HBridge_WriteCounter(uint16 counter) \
+                                                 
+              {
+                  CY_SET_REG16(BL_HBridge_COUNTER_LSB_PTR, counter);
+              }
+              
+              /*******************************************************************************
+              * Function Name: BL_HBridge_ReadCounter
+              ********************************************************************************
+              * 
+              * Summary:
+              *  This function returns the current value of the counter.  It doesn't matter
+              *  if the counter is enabled or running.
+              *
+              * Parameters:  
+              *  void  
+              *
+              * Return: 
+              *  The current value of the counter.
+              *
+              *******************************************************************************/
+              uint16 BL_HBridge_ReadCounter(void) 
+              {
+                  /* Force capture by reading Accumulator */
+                  /* Must first do a software capture to be able to read the counter */
+                  /* It is up to the user code to make sure there isn't already captured data in the FIFO */
+                  CY_GET_REG8(BL_HBridge_COUNTERCAP_LSB_PTR);
+                  
+                  /* Read the data from the FIFO (or capture register for Fixed Function)*/
+                  return (CY_GET_REG16(BL_HBridge_CAPTURE_LSB_PTR));
+              }
+              
+              
+              #if (BL_HBridge_UseStatus)
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 8   
+
+              
+              
+              /*******************************************************************************
+              * Function Name: BL_HBridge_ClearFIFO
+              ********************************************************************************
+              * 
+              * Summary:
+              *  This function clears all capture data from the capture FIFO
+              *
+              * Parameters:  
+              *  void
+              *
+              * Return: 
+              *  void
+              *
+              *******************************************************************************/
+              void BL_HBridge_ClearFIFO(void) 
+              {
+                  while(BL_HBridge_ReadStatusRegister() & BL_HBridge_STATUS_FIFONEMPTY)
+                      BL_HBridge_ReadCapture();
+              }
+              #endif /* BL_HBridge_UseStatus */
+              #endif /* !BL_HBridge_UsingFixedFunction */
+ 449          
+ 450          
+ 451          /*******************************************************************************
+ 452          * Function Name: BL_HBridge_WritePeriod
+ 453          ********************************************************************************
+ 454          * 
+ 455          * Summary:
+ 456          *  This function is used to change the period of the counter.  The new period 
+ 457          *  will be loaded the next time terminal count is detected.
+ 458          *
+ 459          * Parameters:  
+ 460          *  period:  Period value. May be between 1 and (2^Resolution)-1.  A value of 0 
+ 461          *           will result in the counter remaining at zero.
+ 462          *
+ 463          * Return: 
+ 464          *  void
+ 465          *
+ 466          *******************************************************************************/
+ 467          void BL_HBridge_WritePeriod(uint16 period) 
+ 468          {
+ 469   1          #if(BL_HBridge_UsingFixedFunction)
+ 470   1              CY_SET_REG16(BL_HBridge_PERIOD_LSB_PTR, (uint16)period);
+ 471   1          #else
+                      CY_SET_REG16(BL_HBridge_PERIOD_LSB_PTR, period);
+                  #endif /* (BL_HBridge_UsingFixedFunction) */
+ 474   1      }
+ 475          
+ 476          
+ 477          #if (BL_HBridge_UseOneCompareMode)
+ 478          
+ 479          
+ 480          /*******************************************************************************
+ 481          * Function Name: BL_HBridge_WriteCompare
+ 482          ********************************************************************************
+ 483          * 
+ 484          * Summary:
+ 485          *  This funtion is used to change the compare1 value when the PWM is in Dither
+ 486          *  mode. The compare output will reflect the new value on the next UDB clock. 
+ 487          *  The compare output will be driven high when the present counter value is 
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 9   
+
+ 488          *  compared to the compare value based on the compare mode defined in 
+ 489          *  Dither Mode.
+ 490          *
+ 491          * Parameters:  
+ 492          *  compare:  New compare value.  
+ 493          *
+ 494          * Return: 
+ 495          *  void
+ 496          *
+ 497          * Side Effects:
+ 498          *  This function is only available if the PWM mode parameter is set to
+ 499          *  Dither Mode, Center Aligned Mode or One Output Mode
+ 500          *
+ 501          *******************************************************************************/
+ 502          void BL_HBridge_WriteCompare(uint16 compare) \
+ 503                                             
+ 504          {
+ 505   1         CY_SET_REG16(BL_HBridge_COMPARE1_LSB_PTR, compare);
+ 506   1         #if (BL_HBridge_PWMMode == BL_HBridge__B_PWM__DITHER)
+                      CY_SET_REG16(BL_HBridge_COMPARE2_LSB_PTR, compare+1);
+                 #endif /* (BL_HBridge_PWMMode == BL_HBridge__B_PWM__DITHER) */
+ 509   1      }
+ 510          
+ 511          
+ 512          #else
+              
+              
+              /*******************************************************************************
+              * Function Name: BL_HBridge_WriteCompare1
+              ********************************************************************************
+              * 
+              * Summary:
+              *  This funtion is used to change the compare1 value.  The compare output will 
+              *  reflect the new value on the next UDB clock.  The compare output will be 
+              *  driven high when the present counter value is less than or less than or 
+              *  equal to the compare register, depending on the mode.
+              *
+              * Parameters:  
+              *  compare:  New compare value.  
+              *
+              * Return: 
+              *  void
+              *
+              *******************************************************************************/
+              void BL_HBridge_WriteCompare1(uint16 compare) \
+                                                  
+              {
+                  #if(BL_HBridge_UsingFixedFunction)
+                      CY_SET_REG16(BL_HBridge_COMPARE1_LSB_PTR, (uint16)compare);
+                  #else
+                      CY_SET_REG16(BL_HBridge_COMPARE1_LSB_PTR, compare);
+                  #endif /* (BL_HBridge_UsingFixedFunction) */
+              }
+              
+              
+              /*******************************************************************************
+              * Function Name: BL_HBridge_WriteCompare2
+              ********************************************************************************
+              * 
+              * Summary:
+              *  This funtion is used to change the compare value, for compare1 output.  
+              *  The compare output will reflect the new value on the next UDB clock.  
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 10  
+
+              *  The compare output will be driven high when the present counter value is 
+              *  less than or less than or equal to the compare register, depending on the 
+              *  mode.
+              *
+              * Parameters:  
+              *  compare:  New compare value.  
+              *
+              * Return: 
+              *  void
+              *
+              *******************************************************************************/
+              void BL_HBridge_WriteCompare2(uint16 compare) \
+                                                  
+              {
+                  #if(BL_HBridge_UsingFixedFunction)
+                      CY_SET_REG16(BL_HBridge_COMPARE2_LSB_PTR, compare);
+                  #else
+                      CY_SET_REG16(BL_HBridge_COMPARE2_LSB_PTR, compare);
+                  #endif /* (BL_HBridge_UsingFixedFunction) */
+              }
+              #endif /* UseOneCompareMode */
+ 571          
+ 572          
+ 573          #if (BL_HBridge_DeadBandUsed)
+              
+              
+              /*******************************************************************************
+              * Function Name: BL_HBridge_WriteDeadTime
+              ********************************************************************************
+              * 
+              * Summary:
+              *  This function writes the dead-band counts to the corresponding register
+              *
+              * Parameters:  
+              *  deadtime:  Number of counts for dead time 
+              *
+              * Return: 
+              *  void
+              *
+              *******************************************************************************/
+              void BL_HBridge_WriteDeadTime(uint8 deadtime) 
+              {
+                  /* If using the Dead Band 1-255 mode then just write the register */
+                  #if(!BL_HBridge_DeadBand2_4)
+                      CY_SET_REG8(BL_HBridge_DEADBAND_COUNT_PTR, deadtime);
+                  #else
+                      /* Otherwise the data has to be masked and offset */        
+                      /* Clear existing data */
+                      BL_HBridge_DEADBAND_COUNT &= ~BL_HBridge_DEADBAND_COUNT_MASK; 
+                          /* Set new dead time */
+                      BL_HBridge_DEADBAND_COUNT |= (deadtime << BL_HBridge_DEADBAND_COUNT_SHIFT) & 
+                                                          BL_HBridge_DEADBAND_COUNT_MASK; 
+                  #endif /* (!BL_HBridge_DeadBand2_4) */
+              }
+              
+              
+              /*******************************************************************************
+              * Function Name: BL_HBridge_ReadDeadTime
+              ********************************************************************************
+              * 
+              * Summary:
+              *  This function reads the dead-band counts from the corresponding register
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 11  
+
+              *
+              * Parameters:  
+              *  void
+              *
+              * Return: 
+              *  Dead Band Counts
+              *
+              *******************************************************************************/
+              uint8 BL_HBridge_ReadDeadTime(void) 
+              {
+                  /* If using the Dead Band 1-255 mode then just read the register */
+                  #if(!BL_HBridge_DeadBand2_4)
+                      return (CY_GET_REG8(BL_HBridge_DEADBAND_COUNT_PTR));
+                  #else
+                      /* Otherwise the data has to be masked and offset */
+                      return ((BL_HBridge_DEADBAND_COUNT & BL_HBridge_DEADBAND_COUNT_MASK) >> 
+                               BL_HBridge_DEADBAND_COUNT_SHIFT);
+                  #endif /* (!BL_HBridge_DeadBand2_4) */
+              }
+              #endif /* DeadBandUsed */
+ 632          
+ 633          
+ 634          /* [] END OF FILE */
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 12  
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION BL_HBridge_Start (BEGIN)
+                                           ; SOURCE LINE # 50
+                                           ; SOURCE LINE # 51
+                                           ; SOURCE LINE # 53
+0000 900000      R     MOV     DPTR,#BL_HBridge_initVar
+0003 E0                MOVX    A,@DPTR
+0004 FF                MOV     R7,A
+0005 EF                MOV     A,R7
+0006 7009              JNZ     ?C0001
+                                           ; SOURCE LINE # 54
+                                           ; SOURCE LINE # 55
+0008 120000      R     LCALL   BL_HBridge_Init
+                                           ; SOURCE LINE # 56
+000B 900000      R     MOV     DPTR,#BL_HBridge_initVar
+000E 7401              MOV     A,#01H
+0010 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 57
+0011         ?C0001:
+                                           ; SOURCE LINE # 58
+0011 120000      R     LCALL   BL_HBridge_Enable
+                                           ; SOURCE LINE # 60
+0014 22                RET     
+             ; FUNCTION BL_HBridge_Start (END)
+
+             ; FUNCTION BL_HBridge_Init (BEGIN)
+                                           ; SOURCE LINE # 79
+                                           ; SOURCE LINE # 80
+                                           ; SOURCE LINE # 94
+0000 904F00            MOV     DPTR,#04F00H
+0003 E0                MOVX    A,@DPTR
+0004 FF                MOV     R7,A
+0005 EF                MOV     A,R7
+0006 4402              ORL     A,#02H
+0008 FF                MOV     R7,A
+0009 EF                MOV     A,R7
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 105
+000B 904F02            MOV     DPTR,#04F02H
+000E E0                MOVX    A,@DPTR
+000F FF                MOV     R7,A
+0010 EF                MOV     A,R7
+0011 548F              ANL     A,#08FH
+0013 FF                MOV     R7,A
+0014 900000      R     MOV     DPTR,#ctrl
+0017 EF                MOV     A,R7
+0018 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 106
+0019 900000      R     MOV     DPTR,#ctrl
+001C E0                MOVX    A,@DPTR
+001D FF                MOV     R7,A
+001E EF                MOV     A,R7
+001F 4410              ORL     A,#010H
+0021 FF                MOV     R7,A
+0022 904F02            MOV     DPTR,#04F02H
+0025 EF                MOV     A,R7
+0026 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 110
+0027 904F0B            MOV     DPTR,#04F0BH
+002A E0                MOVX    A,@DPTR
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 13  
+
+002B FF                MOV     R7,A
+002C EF                MOV     A,R7
+002D 54CF              ANL     A,#0CFH
+002F FF                MOV     R7,A
+0030 EF                MOV     A,R7
+0031 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 111
+0032 904F0B            MOV     DPTR,#04F0BH
+0035 E0                MOVX    A,@DPTR
+0036 FF                MOV     R7,A
+0037 EF                MOV     A,R7
+0038 4430              ORL     A,#030H
+003A FF                MOV     R7,A
+003B EF                MOV     A,R7
+003C F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 114
+003D 904F0B            MOV     DPTR,#04F0BH
+0040 E0                MOVX    A,@DPTR
+0041 FF                MOV     R7,A
+0042 EF                MOV     A,R7
+0043 54F0              ANL     A,#0F0H
+0045 FF                MOV     R7,A
+0046 EF                MOV     A,R7
+0047 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 115
+0048 904F0B            MOV     DPTR,#04F0BH
+004B E0                MOVX    A,@DPTR
+004C FF                MOV     R7,A
+004D EF                MOV     A,R7
+004E 440F              ORL     A,#0FH
+0050 FF                MOV     R7,A
+0051 EF                MOV     A,R7
+0052 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 137
+0053 7FE7              MOV     R7,#0E7H
+0055 7E03              MOV     R6,#03H
+0057 120000      R     LCALL   _BL_HBridge_WritePeriod
+                                           ; SOURCE LINE # 140
+005A 7FF4              MOV     R7,#0F4H
+005C 7E01              MOV     R6,#01H
+005E 120000      R     LCALL   _BL_HBridge_WriteCompare
+                                           ; SOURCE LINE # 155
+0061 904F03            MOV     DPTR,#04F03H
+0064 E4                CLR     A
+0065 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 160
+0066 9043A3            MOV     DPTR,#043A3H
+0069 E0                MOVX    A,@DPTR
+006A FF                MOV     R7,A
+006B EF                MOV     A,R7
+006C 4401              ORL     A,#01H
+006E FF                MOV     R7,A
+006F EF                MOV     A,R7
+0070 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 162
+0071 904F01            MOV     DPTR,#04F01H
+0074 E0                MOVX    A,@DPTR
+0075 FF                MOV     R7,A
+0076 EF                MOV     A,R7
+0077 4401              ORL     A,#01H
+0079 FF                MOV     R7,A
+007A EF                MOV     A,R7
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 14  
+
+007B F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 180
+007C 22                RET     
+             ; FUNCTION BL_HBridge_Init (END)
+
+             ; FUNCTION BL_HBridge_Enable (BEGIN)
+                                           ; SOURCE LINE # 200
+                                           ; SOURCE LINE # 201
+                                           ; SOURCE LINE # 204
+0000 9043A3            MOV     DPTR,#043A3H
+0003 E0                MOVX    A,@DPTR
+0004 FF                MOV     R7,A
+0005 EF                MOV     A,R7
+0006 4401              ORL     A,#01H
+0008 FF                MOV     R7,A
+0009 EF                MOV     A,R7
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 205
+000B 9043B3            MOV     DPTR,#043B3H
+000E E0                MOVX    A,@DPTR
+000F FF                MOV     R7,A
+0010 EF                MOV     A,R7
+0011 4401              ORL     A,#01H
+0013 FF                MOV     R7,A
+0014 EF                MOV     A,R7
+0015 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 210
+0016 904F00            MOV     DPTR,#04F00H
+0019 E0                MOVX    A,@DPTR
+001A FF                MOV     R7,A
+001B EF                MOV     A,R7
+001C 4401              ORL     A,#01H
+001E FF                MOV     R7,A
+001F EF                MOV     A,R7
+0020 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 212
+0021 22                RET     
+             ; FUNCTION BL_HBridge_Enable (END)
+
+             ; FUNCTION BL_HBridge_Stop (BEGIN)
+                                           ; SOURCE LINE # 234
+                                           ; SOURCE LINE # 235
+                                           ; SOURCE LINE # 237
+0000 904F00            MOV     DPTR,#04F00H
+0003 E0                MOVX    A,@DPTR
+0004 FF                MOV     R7,A
+0005 EF                MOV     A,R7
+0006 54FE              ANL     A,#0FEH
+0008 FF                MOV     R7,A
+0009 EF                MOV     A,R7
+000A F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 242
+000B 9043A3            MOV     DPTR,#043A3H
+000E E0                MOVX    A,@DPTR
+000F FF                MOV     R7,A
+0010 EF                MOV     A,R7
+0011 54FE              ANL     A,#0FEH
+0013 FF                MOV     R7,A
+0014 EF                MOV     A,R7
+0015 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 243
+0016 9043B3            MOV     DPTR,#043B3H
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 15  
+
+0019 E0                MOVX    A,@DPTR
+001A FF                MOV     R7,A
+001B EF                MOV     A,R7
+001C 54FE              ANL     A,#0FEH
+001E FF                MOV     R7,A
+001F EF                MOV     A,R7
+0020 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 245
+0021 22                RET     
+             ; FUNCTION BL_HBridge_Stop (END)
+
+             ; FUNCTION _BL_HBridge_WritePeriod (BEGIN)
+                                           ; SOURCE LINE # 467
+0000 900000      R     MOV     DPTR,#period
+0003 EE                MOV     A,R6
+0004 F0                MOVX    @DPTR,A
+0005 A3                INC     DPTR
+0006 EF                MOV     A,R7
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 468
+                                           ; SOURCE LINE # 470
+0008 7B02              MOV     R3,#02H
+000A 7A4F              MOV     R2,#04FH
+000C 7904              MOV     R1,#04H
+000E 900000      R     MOV     DPTR,#period
+0011 E0                MOVX    A,@DPTR
+0012 FC                MOV     R4,A
+0013 A3                INC     DPTR
+0014 E0                MOVX    A,@DPTR
+0015 FD                MOV     R5,A
+0016 120000      E     LCALL   _cywrite16_nodpx
+                                           ; SOURCE LINE # 474
+0019 22                RET     
+             ; FUNCTION _BL_HBridge_WritePeriod (END)
+
+             ; FUNCTION _BL_HBridge_WriteCompare (BEGIN)
+                                           ; SOURCE LINE # 502
+0000 900000      R     MOV     DPTR,#compare
+0003 EE                MOV     A,R6
+0004 F0                MOVX    @DPTR,A
+0005 A3                INC     DPTR
+0006 EF                MOV     A,R7
+0007 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 504
+                                           ; SOURCE LINE # 505
+0008 7B02              MOV     R3,#02H
+000A 7A4F              MOV     R2,#04FH
+000C 7906              MOV     R1,#06H
+000E 900000      R     MOV     DPTR,#compare
+0011 E0                MOVX    A,@DPTR
+0012 FC                MOV     R4,A
+0013 A3                INC     DPTR
+0014 E0                MOVX    A,@DPTR
+0015 FD                MOV     R5,A
+0016 120000      E     LCALL   _cywrite16_nodpx
+                                           ; SOURCE LINE # 509
+0019 22                RET     
+             ; FUNCTION _BL_HBridge_WriteCompare (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+C51 COMPILER V9.03   BL_HBRIDGE                                                            05/02/2016 22:49:35 PAGE 16  
+
+   CODE SIZE        =    266    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =      1       5
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

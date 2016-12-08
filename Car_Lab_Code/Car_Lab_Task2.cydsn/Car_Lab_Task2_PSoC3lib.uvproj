@@ -883,6 +883,21 @@
               <FileType>5</FileType>
               <FilePath>.\Generated_Source\PSoC3\uart_rx.h</FilePath>
             </File>
+            <File>
+              <FileName>Debug_Pin.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Generated_Source\PSoC3\Debug_Pin.c</FilePath>
+            </File>
+            <File>
+              <FileName>Debug_Pin.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Generated_Source\PSoC3\Debug_Pin.h</FilePath>
+            </File>
+            <File>
+              <FileName>Debug_Pin_aliases.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Generated_Source\PSoC3\Debug_Pin_aliases.h</FilePath>
+            </File>
           </Files>
         </Group>
       </Groups>
@@ -1767,6 +1782,21 @@
               <FileName>uart_rx.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\Generated_Source\PSoC3\uart_rx.h</FilePath>
+            </File>
+            <File>
+              <FileName>Debug_Pin.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Generated_Source\PSoC3\Debug_Pin.c</FilePath>
+            </File>
+            <File>
+              <FileName>Debug_Pin.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Generated_Source\PSoC3\Debug_Pin.h</FilePath>
+            </File>
+            <File>
+              <FileName>Debug_Pin_aliases.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\Generated_Source\PSoC3\Debug_Pin_aliases.h</FilePath>
             </File>
           </Files>
         </Group>

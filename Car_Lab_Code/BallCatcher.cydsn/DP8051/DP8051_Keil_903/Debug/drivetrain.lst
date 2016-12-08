@@ -1,0 +1,921 @@
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 1   
+
+
+C51 COMPILER V9.03, COMPILATION OF MODULE DRIVETRAIN
+OBJECT MODULE PLACED IN .\DP8051\DP8051_Keil_903\Debug\drivetrain.obj
+COMPILER INVOKED BY: C:\Program Files\Cypress\PSoC Creator\2.1\PSoC Creator\import\keil\pk51\9.03\C51\BIN\c51.exe .\driv
+                    -etrain.c NOIV LARGE MODDP2 OMF2 VB(1) PR(.\DP8051\DP8051_Keil_903\Debug\drivetrain.lst) CD DB NOIP OT(2,SIZE) INCDIR(Gen
+                    -erated_Source\PSoC3) OJ(.\DP8051\DP8051_Keil_903\Debug\drivetrain.obj)
+
+line level    source
+
+   1          /* ========================================
+   2           *
+   3           * Copyright YOUR COMPANY, THE YEAR
+   4           * All Rights Reserved
+   5           * UNPUBLISHED, LICENSED SOFTWARE.
+   6           *
+   7           * CONFIDENTIAL AND PROPRIETARY INFORMATION
+   8           * WHICH IS THE PROPERTY OF your company.
+   9           *
+  10           * ========================================
+  11          */
+  12          
+  13          #include "drivetrain.h"
+  14          #include <device.h>
+  15          
+  16          /*constants*/
+  17          #define FL_OFFSET 0
+  18          #define FR_OFFSET 0
+  19          #define BL_OFFSET 0
+  20          #define BR_OFFSET 0
+  21          
+  22          #define DEADBAND 10
+  23          
+  24          void DriveTrain_Start(void)
+  25          {
+  26   1          /* Start PWM Signals */
+  27   1          FL_HBridge_Start();
+  28   1          FR_HBridge_Start();
+  29   1          BL_HBridge_Start();
+  30   1          BR_HBridge_Start();   
+  31   1          
+  32   1          DriveTrain_Stop();
+  33   1      }
+  34          
+  35          void DriveTrain_Set(int x, int y, int a)
+  36          {
+  37   1          /*initialize motor write values*/
+  38   1          int writeValues[4] = {0};
+  39   1          int max = 0;
+  40   1          int i;
+  41   1          
+  42   1          /*project (x, y, a) vector onto 4-motor 4-vector space*/
+  43   1          writeValues[0] = x + y - a;
+  44   1          writeValues[1] = -(-x + y + a);
+  45   1          writeValues[2] = -x + y - a;
+  46   1          writeValues[3] = -(x + y + a);
+  47   1          
+  48   1          /*if any value larger than 5000 (our maximum), scale to 5000*/
+  49   1          for (i = 0; i < 4; i++)
+  50   1          {
+  51   2              if (writeValues[i] > max)
+  52   2                  max = writeValues[i];
+  53   2              else if (-writeValues[i] > max)
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 2   
+
+  54   2                  max = -writeValues[i];
+  55   2                  
+  56   2              /* Deadband */
+  57   2              if ((writeValues[i] < DEADBAND) && (writeValues[i] > -DEADBAND))
+  58   2                  writeValues[i] = 0;
+  59   2          }
+  60   1          if (max > 500)
+  61   1          {
+  62   2              float div = (float)max / 500.0f;
+  63   2              
+  64   2              for (i = 0; i < 4; i++) {
+  65   3                  writeValues[i] = (int)((float)(writeValues[i])/div); 
+  66   3                  if (writeValues[i] < -500)
+  67   3                      writeValues[i] = -500;
+  68   3              }
+  69   2          }
+  70   1          
+  71   1          /*Convert them from -500~500 to 0~1000*/
+  72   1          writeValues[0] += (500 + FL_OFFSET);
+  73   1          writeValues[1] += (500 - FR_OFFSET);
+  74   1          writeValues[2] += (500 + BL_OFFSET);
+  75   1          writeValues[3] += (500 - BR_OFFSET);
+  76   1          
+  77   1          FL_HBridge_WriteCompare(writeValues[0]);
+  78   1          FR_HBridge_WriteCompare(writeValues[1]);
+  79   1          BL_HBridge_WriteCompare(writeValues[2]);
+  80   1          BR_HBridge_WriteCompare(writeValues[3]);
+  81   1      }
+  82          
+  83          void DriveTrain_Stop(void)
+  84          {
+  85   1          FL_HBridge_WriteCompare(500 + FL_OFFSET);
+  86   1          FR_HBridge_WriteCompare(500 - FR_OFFSET);
+  87   1          BL_HBridge_WriteCompare(500 + BL_OFFSET);
+  88   1          BR_HBridge_WriteCompare(500 - BR_OFFSET);
+  89   1          
+  90   1      }
+  91          
+  92          /* [] END OF FILE */
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 3   
+
+ASSEMBLY LISTING OF GENERATED OBJECT CODE
+
+
+             ; FUNCTION DriveTrain_Start (BEGIN)
+                                           ; SOURCE LINE # 24
+                                           ; SOURCE LINE # 25
+                                           ; SOURCE LINE # 27
+0000 120000      E     LCALL   FL_HBridge_Start
+                                           ; SOURCE LINE # 28
+0003 120000      E     LCALL   FR_HBridge_Start
+                                           ; SOURCE LINE # 29
+0006 120000      E     LCALL   BL_HBridge_Start
+                                           ; SOURCE LINE # 30
+0009 120000      E     LCALL   BR_HBridge_Start
+                                           ; SOURCE LINE # 32
+000C 120000      R     LCALL   DriveTrain_Stop
+                                           ; SOURCE LINE # 33
+000F 22                RET     
+             ; FUNCTION DriveTrain_Start (END)
+
+             ; FUNCTION _DriveTrain_Set (BEGIN)
+                                           ; SOURCE LINE # 35
+0000 900000      R     MOV     DPTR,#x
+0003 EE                MOV     A,R6
+0004 F0                MOVX    @DPTR,A
+0005 A3                INC     DPTR
+0006 EF                MOV     A,R7
+0007 F0                MOVX    @DPTR,A
+0008 900000      R     MOV     DPTR,#y
+000B EC                MOV     A,R4
+000C F0                MOVX    @DPTR,A
+000D A3                INC     DPTR
+000E ED                MOV     A,R5
+000F F0                MOVX    @DPTR,A
+0010 900000      R     MOV     DPTR,#a
+0013 EA                MOV     A,R2
+0014 F0                MOVX    @DPTR,A
+0015 A3                INC     DPTR
+0016 EB                MOV     A,R3
+0017 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 36
+                                           ; SOURCE LINE # 38
+0018 7BFF              MOV     R3,#0FFH
+001A 7A00        R     MOV     R2,#HIGH _?ix1000
+001C 7900        R     MOV     R1,#LOW _?ix1000
+001E C003              PUSH    AR3
+0020 C002              PUSH    AR2
+0022 C001              PUSH    AR1
+0024 7B01              MOV     R3,#01H
+0026 7A00        R     MOV     R2,#HIGH writeValues
+0028 7900        R     MOV     R1,#LOW writeValues
+002A A801              MOV     R0,AR1
+002C AC02              MOV     R4,AR2
+002E AD03              MOV     R5,AR3
+0030 D001              POP     AR1
+0032 D002              POP     AR2
+0034 D003              POP     AR3
+0036 7E00              MOV     R6,#00H
+0038 7F08              MOV     R7,#08H
+003A 120000      E     LCALL   ?C?COPYAMD
+                                           ; SOURCE LINE # 39
+003D 900000      R     MOV     DPTR,#max
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 4   
+
+0040 E4                CLR     A
+0041 F0                MOVX    @DPTR,A
+0042 A3                INC     DPTR
+0043 E4                CLR     A
+0044 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 43
+0045 900000      R     MOV     DPTR,#y
+0048 E0                MOVX    A,@DPTR
+0049 FE                MOV     R6,A
+004A A3                INC     DPTR
+004B E0                MOVX    A,@DPTR
+004C FF                MOV     R7,A
+004D 900000      R     MOV     DPTR,#x
+0050 E0                MOVX    A,@DPTR
+0051 FC                MOV     R4,A
+0052 A3                INC     DPTR
+0053 E0                MOVX    A,@DPTR
+0054 FD                MOV     R5,A
+0055 ED                MOV     A,R5
+0056 2F                ADD     A,R7
+0057 FF                MOV     R7,A
+0058 EC                MOV     A,R4
+0059 3E                ADDC    A,R6
+005A FE                MOV     R6,A
+005B 900000      R     MOV     DPTR,#a
+005E E0                MOVX    A,@DPTR
+005F FC                MOV     R4,A
+0060 A3                INC     DPTR
+0061 E0                MOVX    A,@DPTR
+0062 FD                MOV     R5,A
+0063 C3                CLR     C
+0064 EF                MOV     A,R7
+0065 9D                SUBB    A,R5
+0066 FF                MOV     R7,A
+0067 EE                MOV     A,R6
+0068 9C                SUBB    A,R4
+0069 FE                MOV     R6,A
+006A 900000      R     MOV     DPTR,#writeValues
+006D EE                MOV     A,R6
+006E F0                MOVX    @DPTR,A
+006F A3                INC     DPTR
+0070 EF                MOV     A,R7
+0071 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 44
+0072 900000      R     MOV     DPTR,#x
+0075 E0                MOVX    A,@DPTR
+0076 FE                MOV     R6,A
+0077 A3                INC     DPTR
+0078 E0                MOVX    A,@DPTR
+0079 FF                MOV     R7,A
+007A C3                CLR     C
+007B E4                CLR     A
+007C 9F                SUBB    A,R7
+007D FF                MOV     R7,A
+007E E4                CLR     A
+007F 9E                SUBB    A,R6
+0080 FE                MOV     R6,A
+0081 900000      R     MOV     DPTR,#y
+0084 E0                MOVX    A,@DPTR
+0085 FC                MOV     R4,A
+0086 A3                INC     DPTR
+0087 E0                MOVX    A,@DPTR
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 5   
+
+0088 FD                MOV     R5,A
+0089 EF                MOV     A,R7
+008A 2D                ADD     A,R5
+008B FF                MOV     R7,A
+008C EE                MOV     A,R6
+008D 3C                ADDC    A,R4
+008E FE                MOV     R6,A
+008F 900000      R     MOV     DPTR,#a
+0092 E0                MOVX    A,@DPTR
+0093 FC                MOV     R4,A
+0094 A3                INC     DPTR
+0095 E0                MOVX    A,@DPTR
+0096 FD                MOV     R5,A
+0097 EF                MOV     A,R7
+0098 2D                ADD     A,R5
+0099 FF                MOV     R7,A
+009A EE                MOV     A,R6
+009B 3C                ADDC    A,R4
+009C FE                MOV     R6,A
+009D C3                CLR     C
+009E E4                CLR     A
+009F 9F                SUBB    A,R7
+00A0 FF                MOV     R7,A
+00A1 E4                CLR     A
+00A2 9E                SUBB    A,R6
+00A3 FE                MOV     R6,A
+00A4 900000      R     MOV     DPTR,#writeValues+02H
+00A7 EE                MOV     A,R6
+00A8 F0                MOVX    @DPTR,A
+00A9 A3                INC     DPTR
+00AA EF                MOV     A,R7
+00AB F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 45
+00AC 900000      R     MOV     DPTR,#x
+00AF E0                MOVX    A,@DPTR
+00B0 FE                MOV     R6,A
+00B1 A3                INC     DPTR
+00B2 E0                MOVX    A,@DPTR
+00B3 FF                MOV     R7,A
+00B4 C3                CLR     C
+00B5 E4                CLR     A
+00B6 9F                SUBB    A,R7
+00B7 FF                MOV     R7,A
+00B8 E4                CLR     A
+00B9 9E                SUBB    A,R6
+00BA FE                MOV     R6,A
+00BB 900000      R     MOV     DPTR,#y
+00BE E0                MOVX    A,@DPTR
+00BF FC                MOV     R4,A
+00C0 A3                INC     DPTR
+00C1 E0                MOVX    A,@DPTR
+00C2 FD                MOV     R5,A
+00C3 EF                MOV     A,R7
+00C4 2D                ADD     A,R5
+00C5 FF                MOV     R7,A
+00C6 EE                MOV     A,R6
+00C7 3C                ADDC    A,R4
+00C8 FE                MOV     R6,A
+00C9 900000      R     MOV     DPTR,#a
+00CC E0                MOVX    A,@DPTR
+00CD FC                MOV     R4,A
+00CE A3                INC     DPTR
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 6   
+
+00CF E0                MOVX    A,@DPTR
+00D0 FD                MOV     R5,A
+00D1 C3                CLR     C
+00D2 EF                MOV     A,R7
+00D3 9D                SUBB    A,R5
+00D4 FF                MOV     R7,A
+00D5 EE                MOV     A,R6
+00D6 9C                SUBB    A,R4
+00D7 FE                MOV     R6,A
+00D8 900000      R     MOV     DPTR,#writeValues+04H
+00DB EE                MOV     A,R6
+00DC F0                MOVX    @DPTR,A
+00DD A3                INC     DPTR
+00DE EF                MOV     A,R7
+00DF F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 46
+00E0 900000      R     MOV     DPTR,#y
+00E3 E0                MOVX    A,@DPTR
+00E4 FE                MOV     R6,A
+00E5 A3                INC     DPTR
+00E6 E0                MOVX    A,@DPTR
+00E7 FF                MOV     R7,A
+00E8 900000      R     MOV     DPTR,#x
+00EB E0                MOVX    A,@DPTR
+00EC FC                MOV     R4,A
+00ED A3                INC     DPTR
+00EE E0                MOVX    A,@DPTR
+00EF FD                MOV     R5,A
+00F0 ED                MOV     A,R5
+00F1 2F                ADD     A,R7
+00F2 FF                MOV     R7,A
+00F3 EC                MOV     A,R4
+00F4 3E                ADDC    A,R6
+00F5 FE                MOV     R6,A
+00F6 900000      R     MOV     DPTR,#a
+00F9 E0                MOVX    A,@DPTR
+00FA FC                MOV     R4,A
+00FB A3                INC     DPTR
+00FC E0                MOVX    A,@DPTR
+00FD FD                MOV     R5,A
+00FE EF                MOV     A,R7
+00FF 2D                ADD     A,R5
+0100 FF                MOV     R7,A
+0101 EE                MOV     A,R6
+0102 3C                ADDC    A,R4
+0103 FE                MOV     R6,A
+0104 C3                CLR     C
+0105 E4                CLR     A
+0106 9F                SUBB    A,R7
+0107 FF                MOV     R7,A
+0108 E4                CLR     A
+0109 9E                SUBB    A,R6
+010A FE                MOV     R6,A
+010B 900000      R     MOV     DPTR,#writeValues+06H
+010E EE                MOV     A,R6
+010F F0                MOVX    @DPTR,A
+0110 A3                INC     DPTR
+0111 EF                MOV     A,R7
+0112 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 49
+0113 900000      R     MOV     DPTR,#i
+0116 E4                CLR     A
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 7   
+
+0117 F0                MOVX    @DPTR,A
+0118 A3                INC     DPTR
+0119 E4                CLR     A
+011A F0                MOVX    @DPTR,A
+011B         ?C0002:
+011B 900000      R     MOV     DPTR,#i
+011E E0                MOVX    A,@DPTR
+011F FE                MOV     R6,A
+0120 A3                INC     DPTR
+0121 E0                MOVX    A,@DPTR
+0122 FF                MOV     R7,A
+0123 C3                CLR     C
+0124 EF                MOV     A,R7
+0125 9404              SUBB    A,#04H
+0127 EE                MOV     A,R6
+0128 6480              XRL     A,#080H
+012A 9480              SUBB    A,#080H
+012C 4003              JC      $ + 5H
+012E 020000      R     LJMP    ?C0003
+                                           ; SOURCE LINE # 50
+                                           ; SOURCE LINE # 51
+0131 900000      R     MOV     DPTR,#i
+0134 E0                MOVX    A,@DPTR
+0135 FE                MOV     R6,A
+0136 A3                INC     DPTR
+0137 E0                MOVX    A,@DPTR
+0138 FF                MOV     R7,A
+0139 EF                MOV     A,R7
+013A 25E0              ADD     A,ACC
+013C FF                MOV     R7,A
+013D EE                MOV     A,R6
+013E 33                RLC     A
+013F FE                MOV     R6,A
+0140 7400        R     MOV     A,#LOW writeValues
+0142 2F                ADD     A,R7
+0143 F582              MOV     DPL,A
+0145 7400        R     MOV     A,#HIGH writeValues
+0147 3E                ADDC    A,R6
+0148 F583              MOV     DPH,A
+014A E0                MOVX    A,@DPTR
+014B FE                MOV     R6,A
+014C A3                INC     DPTR
+014D E0                MOVX    A,@DPTR
+014E FF                MOV     R7,A
+014F 900000      R     MOV     DPTR,#max
+0152 E0                MOVX    A,@DPTR
+0153 FC                MOV     R4,A
+0154 A3                INC     DPTR
+0155 E0                MOVX    A,@DPTR
+0156 FD                MOV     R5,A
+0157 D3                SETB    C
+0158 EF                MOV     A,R7
+0159 9D                SUBB    A,R5
+015A EC                MOV     A,R4
+015B 6480              XRL     A,#080H
+015D F8                MOV     R0,A
+015E EE                MOV     A,R6
+015F 6480              XRL     A,#080H
+0161 98                SUBB    A,R0
+0162 4028              JC      ?C0005
+                                           ; SOURCE LINE # 52
+0164 900000      R     MOV     DPTR,#i
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 8   
+
+0167 E0                MOVX    A,@DPTR
+0168 FE                MOV     R6,A
+0169 A3                INC     DPTR
+016A E0                MOVX    A,@DPTR
+016B FF                MOV     R7,A
+016C EF                MOV     A,R7
+016D 25E0              ADD     A,ACC
+016F FF                MOV     R7,A
+0170 EE                MOV     A,R6
+0171 33                RLC     A
+0172 FE                MOV     R6,A
+0173 7400        R     MOV     A,#LOW writeValues
+0175 2F                ADD     A,R7
+0176 F582              MOV     DPL,A
+0178 7400        R     MOV     A,#HIGH writeValues
+017A 3E                ADDC    A,R6
+017B F583              MOV     DPH,A
+017D E0                MOVX    A,@DPTR
+017E FE                MOV     R6,A
+017F A3                INC     DPTR
+0180 E0                MOVX    A,@DPTR
+0181 FF                MOV     R7,A
+0182 900000      R     MOV     DPTR,#max
+0185 EE                MOV     A,R6
+0186 F0                MOVX    @DPTR,A
+0187 A3                INC     DPTR
+0188 EF                MOV     A,R7
+0189 F0                MOVX    @DPTR,A
+018A 8067              SJMP    ?C0006
+018C         ?C0005:
+                                           ; SOURCE LINE # 53
+018C 900000      R     MOV     DPTR,#i
+018F E0                MOVX    A,@DPTR
+0190 FE                MOV     R6,A
+0191 A3                INC     DPTR
+0192 E0                MOVX    A,@DPTR
+0193 FF                MOV     R7,A
+0194 EF                MOV     A,R7
+0195 25E0              ADD     A,ACC
+0197 FF                MOV     R7,A
+0198 EE                MOV     A,R6
+0199 33                RLC     A
+019A FE                MOV     R6,A
+019B 7400        R     MOV     A,#LOW writeValues
+019D 2F                ADD     A,R7
+019E F582              MOV     DPL,A
+01A0 7400        R     MOV     A,#HIGH writeValues
+01A2 3E                ADDC    A,R6
+01A3 F583              MOV     DPH,A
+01A5 E0                MOVX    A,@DPTR
+01A6 FE                MOV     R6,A
+01A7 A3                INC     DPTR
+01A8 E0                MOVX    A,@DPTR
+01A9 FF                MOV     R7,A
+01AA C3                CLR     C
+01AB E4                CLR     A
+01AC 9F                SUBB    A,R7
+01AD FF                MOV     R7,A
+01AE E4                CLR     A
+01AF 9E                SUBB    A,R6
+01B0 FE                MOV     R6,A
+01B1 900000      R     MOV     DPTR,#max
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 9   
+
+01B4 E0                MOVX    A,@DPTR
+01B5 FC                MOV     R4,A
+01B6 A3                INC     DPTR
+01B7 E0                MOVX    A,@DPTR
+01B8 FD                MOV     R5,A
+01B9 D3                SETB    C
+01BA EF                MOV     A,R7
+01BB 9D                SUBB    A,R5
+01BC EC                MOV     A,R4
+01BD 6480              XRL     A,#080H
+01BF F8                MOV     R0,A
+01C0 EE                MOV     A,R6
+01C1 6480              XRL     A,#080H
+01C3 98                SUBB    A,R0
+01C4 402D              JC      ?C0006
+                                           ; SOURCE LINE # 54
+01C6 900000      R     MOV     DPTR,#i
+01C9 E0                MOVX    A,@DPTR
+01CA FE                MOV     R6,A
+01CB A3                INC     DPTR
+01CC E0                MOVX    A,@DPTR
+01CD FF                MOV     R7,A
+01CE EF                MOV     A,R7
+01CF 25E0              ADD     A,ACC
+01D1 FF                MOV     R7,A
+01D2 EE                MOV     A,R6
+01D3 33                RLC     A
+01D4 FE                MOV     R6,A
+01D5 7400        R     MOV     A,#LOW writeValues
+01D7 2F                ADD     A,R7
+01D8 F582              MOV     DPL,A
+01DA 7400        R     MOV     A,#HIGH writeValues
+01DC 3E                ADDC    A,R6
+01DD F583              MOV     DPH,A
+01DF E0                MOVX    A,@DPTR
+01E0 FE                MOV     R6,A
+01E1 A3                INC     DPTR
+01E2 E0                MOVX    A,@DPTR
+01E3 FF                MOV     R7,A
+01E4 C3                CLR     C
+01E5 E4                CLR     A
+01E6 9F                SUBB    A,R7
+01E7 FF                MOV     R7,A
+01E8 E4                CLR     A
+01E9 9E                SUBB    A,R6
+01EA FE                MOV     R6,A
+01EB 900000      R     MOV     DPTR,#max
+01EE EE                MOV     A,R6
+01EF F0                MOVX    @DPTR,A
+01F0 A3                INC     DPTR
+01F1 EF                MOV     A,R7
+01F2 F0                MOVX    @DPTR,A
+01F3         ?C0006:
+                                           ; SOURCE LINE # 57
+01F3 900000      R     MOV     DPTR,#i
+01F6 E0                MOVX    A,@DPTR
+01F7 FE                MOV     R6,A
+01F8 A3                INC     DPTR
+01F9 E0                MOVX    A,@DPTR
+01FA FF                MOV     R7,A
+01FB EF                MOV     A,R7
+01FC 25E0              ADD     A,ACC
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 10  
+
+01FE FF                MOV     R7,A
+01FF EE                MOV     A,R6
+0200 33                RLC     A
+0201 FE                MOV     R6,A
+0202 7400        R     MOV     A,#LOW writeValues
+0204 2F                ADD     A,R7
+0205 F582              MOV     DPL,A
+0207 7400        R     MOV     A,#HIGH writeValues
+0209 3E                ADDC    A,R6
+020A F583              MOV     DPH,A
+020C E0                MOVX    A,@DPTR
+020D FE                MOV     R6,A
+020E A3                INC     DPTR
+020F E0                MOVX    A,@DPTR
+0210 FF                MOV     R7,A
+0211 C3                CLR     C
+0212 EF                MOV     A,R7
+0213 940A              SUBB    A,#0AH
+0215 EE                MOV     A,R6
+0216 6480              XRL     A,#080H
+0218 9480              SUBB    A,#080H
+021A 5047              JNC     ?C0004
+021C 900000      R     MOV     DPTR,#i
+021F E0                MOVX    A,@DPTR
+0220 FE                MOV     R6,A
+0221 A3                INC     DPTR
+0222 E0                MOVX    A,@DPTR
+0223 FF                MOV     R7,A
+0224 EF                MOV     A,R7
+0225 25E0              ADD     A,ACC
+0227 FF                MOV     R7,A
+0228 EE                MOV     A,R6
+0229 33                RLC     A
+022A FE                MOV     R6,A
+022B 7400        R     MOV     A,#LOW writeValues
+022D 2F                ADD     A,R7
+022E F582              MOV     DPL,A
+0230 7400        R     MOV     A,#HIGH writeValues
+0232 3E                ADDC    A,R6
+0233 F583              MOV     DPH,A
+0235 E0                MOVX    A,@DPTR
+0236 FE                MOV     R6,A
+0237 A3                INC     DPTR
+0238 E0                MOVX    A,@DPTR
+0239 FF                MOV     R7,A
+023A D3                SETB    C
+023B EF                MOV     A,R7
+023C 94F6              SUBB    A,#0F6H
+023E EE                MOV     A,R6
+023F 6480              XRL     A,#080H
+0241 947F              SUBB    A,#07FH
+0243 401E              JC      ?C0004
+                                           ; SOURCE LINE # 58
+0245 900000      R     MOV     DPTR,#i
+0248 E0                MOVX    A,@DPTR
+0249 FE                MOV     R6,A
+024A A3                INC     DPTR
+024B E0                MOVX    A,@DPTR
+024C FF                MOV     R7,A
+024D EF                MOV     A,R7
+024E 25E0              ADD     A,ACC
+0250 FF                MOV     R7,A
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 11  
+
+0251 EE                MOV     A,R6
+0252 33                RLC     A
+0253 FE                MOV     R6,A
+0254 7400        R     MOV     A,#LOW writeValues
+0256 2F                ADD     A,R7
+0257 F582              MOV     DPL,A
+0259 7400        R     MOV     A,#HIGH writeValues
+025B 3E                ADDC    A,R6
+025C F583              MOV     DPH,A
+025E E4                CLR     A
+025F F0                MOVX    @DPTR,A
+0260 A3                INC     DPTR
+0261 E4                CLR     A
+0262 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 59
+0263         ?C0004:
+0263 900000      R     MOV     DPTR,#i
+0266 E4                CLR     A
+0267 75F001            MOV     B,#01H
+026A 120000      E     LCALL   ?C?IILDX
+026D 020000      R     LJMP    ?C0002
+0270         ?C0003:
+                                           ; SOURCE LINE # 60
+0270 900000      R     MOV     DPTR,#max
+0273 E0                MOVX    A,@DPTR
+0274 FE                MOV     R6,A
+0275 A3                INC     DPTR
+0276 E0                MOVX    A,@DPTR
+0277 FF                MOV     R7,A
+0278 D3                SETB    C
+0279 EF                MOV     A,R7
+027A 94F4              SUBB    A,#0F4H
+027C EE                MOV     A,R6
+027D 6480              XRL     A,#080H
+027F 9481              SUBB    A,#081H
+0281 5003              JNC     $ + 5H
+0283 020000      R     LJMP    ?C0009
+                                           ; SOURCE LINE # 61
+                                           ; SOURCE LINE # 62
+0286 900000      R     MOV     DPTR,#max
+0289 E0                MOVX    A,@DPTR
+028A FC                MOV     R4,A
+028B A3                INC     DPTR
+028C E0                MOVX    A,@DPTR
+028D FD                MOV     R5,A
+028E EC                MOV     A,R4
+028F 120000      E     LCALL   ?C?FCASTI
+0292 7B00              MOV     R3,#00H
+0294 7A00              MOV     R2,#00H
+0296 79FA              MOV     R1,#0FAH
+0298 7843              MOV     R0,#043H
+029A 120000      E     LCALL   ?C?FPDIV
+029D 900000      R     MOV     DPTR,#div
+02A0 120000      E     LCALL   ?C?LSTXDATA
+                                           ; SOURCE LINE # 64
+02A3 900000      R     MOV     DPTR,#i
+02A6 E4                CLR     A
+02A7 F0                MOVX    @DPTR,A
+02A8 A3                INC     DPTR
+02A9 E4                CLR     A
+02AA F0                MOVX    @DPTR,A
+02AB         ?C0010:
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 12  
+
+02AB 900000      R     MOV     DPTR,#i
+02AE E0                MOVX    A,@DPTR
+02AF FE                MOV     R6,A
+02B0 A3                INC     DPTR
+02B1 E0                MOVX    A,@DPTR
+02B2 FF                MOV     R7,A
+02B3 C3                CLR     C
+02B4 EF                MOV     A,R7
+02B5 9404              SUBB    A,#04H
+02B7 EE                MOV     A,R6
+02B8 6480              XRL     A,#080H
+02BA 9480              SUBB    A,#080H
+02BC 4003              JC      $ + 5H
+02BE 020000      R     LJMP    ?C0009
+                                           ; SOURCE LINE # 65
+02C1 900000      R     MOV     DPTR,#i
+02C4 E0                MOVX    A,@DPTR
+02C5 FE                MOV     R6,A
+02C6 A3                INC     DPTR
+02C7 E0                MOVX    A,@DPTR
+02C8 FF                MOV     R7,A
+02C9 EF                MOV     A,R7
+02CA 25E0              ADD     A,ACC
+02CC FF                MOV     R7,A
+02CD EE                MOV     A,R6
+02CE 33                RLC     A
+02CF FE                MOV     R6,A
+02D0 7400        R     MOV     A,#LOW writeValues
+02D2 2F                ADD     A,R7
+02D3 F582              MOV     DPL,A
+02D5 7400        R     MOV     A,#HIGH writeValues
+02D7 3E                ADDC    A,R6
+02D8 F583              MOV     DPH,A
+02DA E0                MOVX    A,@DPTR
+02DB FC                MOV     R4,A
+02DC A3                INC     DPTR
+02DD E0                MOVX    A,@DPTR
+02DE FD                MOV     R5,A
+02DF EC                MOV     A,R4
+02E0 120000      E     LCALL   ?C?FCASTI
+02E3 900000      R     MOV     DPTR,#div
+02E6 120000      E     LCALL   ?C?LLDXDATA0
+02E9 120000      E     LCALL   ?C?FPDIV
+02EC 120000      E     LCALL   ?C?CASTF
+02EF AD07              MOV     R5,AR7
+02F1 AC06              MOV     R4,AR6
+02F3 AC06              MOV     R4,AR6
+02F5 AD07              MOV     R5,AR7
+02F7 900000      R     MOV     DPTR,#i
+02FA E0                MOVX    A,@DPTR
+02FB FE                MOV     R6,A
+02FC A3                INC     DPTR
+02FD E0                MOVX    A,@DPTR
+02FE FF                MOV     R7,A
+02FF EF                MOV     A,R7
+0300 25E0              ADD     A,ACC
+0302 FF                MOV     R7,A
+0303 EE                MOV     A,R6
+0304 33                RLC     A
+0305 FE                MOV     R6,A
+0306 7400        R     MOV     A,#LOW writeValues
+0308 2F                ADD     A,R7
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 13  
+
+0309 F582              MOV     DPL,A
+030B 7400        R     MOV     A,#HIGH writeValues
+030D 3E                ADDC    A,R6
+030E F583              MOV     DPH,A
+0310 EC                MOV     A,R4
+0311 F0                MOVX    @DPTR,A
+0312 A3                INC     DPTR
+0313 ED                MOV     A,R5
+0314 F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 66
+0315 900000      R     MOV     DPTR,#i
+0318 E0                MOVX    A,@DPTR
+0319 FE                MOV     R6,A
+031A A3                INC     DPTR
+031B E0                MOVX    A,@DPTR
+031C FF                MOV     R7,A
+031D EF                MOV     A,R7
+031E 25E0              ADD     A,ACC
+0320 FF                MOV     R7,A
+0321 EE                MOV     A,R6
+0322 33                RLC     A
+0323 FE                MOV     R6,A
+0324 7400        R     MOV     A,#LOW writeValues
+0326 2F                ADD     A,R7
+0327 F582              MOV     DPL,A
+0329 7400        R     MOV     A,#HIGH writeValues
+032B 3E                ADDC    A,R6
+032C F583              MOV     DPH,A
+032E E0                MOVX    A,@DPTR
+032F FE                MOV     R6,A
+0330 A3                INC     DPTR
+0331 E0                MOVX    A,@DPTR
+0332 FF                MOV     R7,A
+0333 C3                CLR     C
+0334 EF                MOV     A,R7
+0335 940C              SUBB    A,#0CH
+0337 EE                MOV     A,R6
+0338 6480              XRL     A,#080H
+033A 947E              SUBB    A,#07EH
+033C 5020              JNC     ?C0012
+                                           ; SOURCE LINE # 67
+033E 900000      R     MOV     DPTR,#i
+0341 E0                MOVX    A,@DPTR
+0342 FE                MOV     R6,A
+0343 A3                INC     DPTR
+0344 E0                MOVX    A,@DPTR
+0345 FF                MOV     R7,A
+0346 EF                MOV     A,R7
+0347 25E0              ADD     A,ACC
+0349 FF                MOV     R7,A
+034A EE                MOV     A,R6
+034B 33                RLC     A
+034C FE                MOV     R6,A
+034D 7400        R     MOV     A,#LOW writeValues
+034F 2F                ADD     A,R7
+0350 F582              MOV     DPL,A
+0352 7400        R     MOV     A,#HIGH writeValues
+0354 3E                ADDC    A,R6
+0355 F583              MOV     DPH,A
+0357 74FE              MOV     A,#0FEH
+0359 F0                MOVX    @DPTR,A
+035A A3                INC     DPTR
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 14  
+
+035B 740C              MOV     A,#0CH
+035D F0                MOVX    @DPTR,A
+                                           ; SOURCE LINE # 68
+035E         ?C0012:
+035E 900000      R     MOV     DPTR,#i
+0361 E4                CLR     A
+0362 75F001            MOV     B,#01H
+0365 120000      E     LCALL   ?C?IILDX
+0368 020000      R     LJMP    ?C0010
+                                           ; SOURCE LINE # 69
+036B         ?C0009:
+                                           ; SOURCE LINE # 72
+036B 900000      R     MOV     DPTR,#writeValues
+036E 7401              MOV     A,#01H
+0370 75F0F4            MOV     B,#0F4H
+0373 120000      E     LCALL   ?C?IILDX
+                                           ; SOURCE LINE # 73
+0376 900000      R     MOV     DPTR,#writeValues+02H
+0379 7401              MOV     A,#01H
+037B 75F0F4            MOV     B,#0F4H
+037E 120000      E     LCALL   ?C?IILDX
+                                           ; SOURCE LINE # 74
+0381 900000      R     MOV     DPTR,#writeValues+04H
+0384 7401              MOV     A,#01H
+0386 75F0F4            MOV     B,#0F4H
+0389 120000      E     LCALL   ?C?IILDX
+                                           ; SOURCE LINE # 75
+038C 900000      R     MOV     DPTR,#writeValues+06H
+038F 7401              MOV     A,#01H
+0391 75F0F4            MOV     B,#0F4H
+0394 120000      E     LCALL   ?C?IILDX
+                                           ; SOURCE LINE # 77
+0397 900000      R     MOV     DPTR,#writeValues
+039A E0                MOVX    A,@DPTR
+039B FE                MOV     R6,A
+039C A3                INC     DPTR
+039D E0                MOVX    A,@DPTR
+039E FF                MOV     R7,A
+039F 120000      E     LCALL   _FL_HBridge_WriteCompare
+                                           ; SOURCE LINE # 78
+03A2 900000      R     MOV     DPTR,#writeValues+02H
+03A5 E0                MOVX    A,@DPTR
+03A6 FE                MOV     R6,A
+03A7 A3                INC     DPTR
+03A8 E0                MOVX    A,@DPTR
+03A9 FF                MOV     R7,A
+03AA 120000      E     LCALL   _FR_HBridge_WriteCompare
+                                           ; SOURCE LINE # 79
+03AD 900000      R     MOV     DPTR,#writeValues+04H
+03B0 E0                MOVX    A,@DPTR
+03B1 FE                MOV     R6,A
+03B2 A3                INC     DPTR
+03B3 E0                MOVX    A,@DPTR
+03B4 FF                MOV     R7,A
+03B5 120000      E     LCALL   _BL_HBridge_WriteCompare
+                                           ; SOURCE LINE # 80
+03B8 900000      R     MOV     DPTR,#writeValues+06H
+03BB E0                MOVX    A,@DPTR
+03BC FE                MOV     R6,A
+03BD A3                INC     DPTR
+03BE E0                MOVX    A,@DPTR
+03BF FF                MOV     R7,A
+C51 COMPILER V9.03   DRIVETRAIN                                                            04/29/2016 14:38:55 PAGE 15  
+
+03C0 120000      E     LCALL   _BR_HBridge_WriteCompare
+                                           ; SOURCE LINE # 81
+03C3 22                RET     
+             ; FUNCTION _DriveTrain_Set (END)
+
+             ; FUNCTION DriveTrain_Stop (BEGIN)
+                                           ; SOURCE LINE # 83
+                                           ; SOURCE LINE # 84
+                                           ; SOURCE LINE # 85
+0000 7FF4              MOV     R7,#0F4H
+0002 7E01              MOV     R6,#01H
+0004 120000      E     LCALL   _FL_HBridge_WriteCompare
+                                           ; SOURCE LINE # 86
+0007 7FF4              MOV     R7,#0F4H
+0009 7E01              MOV     R6,#01H
+000B 120000      E     LCALL   _FR_HBridge_WriteCompare
+                                           ; SOURCE LINE # 87
+000E 7FF4              MOV     R7,#0F4H
+0010 7E01              MOV     R6,#01H
+0012 120000      E     LCALL   _BL_HBridge_WriteCompare
+                                           ; SOURCE LINE # 88
+0015 7FF4              MOV     R7,#0F4H
+0017 7E01              MOV     R6,#01H
+0019 120000      E     LCALL   _BR_HBridge_WriteCompare
+                                           ; SOURCE LINE # 90
+001C 22                RET     
+             ; FUNCTION DriveTrain_Stop (END)
+
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1009    ----
+   CONSTANT SIZE    =      8    ----
+   XDATA SIZE       =   ----      22
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+   EDATA SIZE       =   ----    ----
+   HDATA SIZE       =   ----    ----
+   XDATA CONST SIZE =   ----    ----
+   FAR CONST SIZE   =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
